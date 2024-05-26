@@ -15,3 +15,8 @@ resilience4j.retry:
         - java.io.IOException
       ignoreExceptions: []
 
+available-currencies:
+  codes:
+    - USD
+    - EUR
+    - PLN
