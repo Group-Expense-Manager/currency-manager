@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      database: currency_manager_db
+      database: service_template_db
       password: admin
       username: admin
       authentication-database: admin
