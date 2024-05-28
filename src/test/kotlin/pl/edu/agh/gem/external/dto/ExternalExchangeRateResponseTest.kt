@@ -4,7 +4,7 @@ import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.shouldBe
 import pl.edu.agh.gem.internal.model.ExchangeRate
 import java.math.BigDecimal
-import java.time.Instant
+import java.time.Instant.parse
 
 class ExternalExchangeRateResponseTest : ShouldSpec({
 
@@ -14,7 +14,7 @@ class ExternalExchangeRateResponseTest : ShouldSpec({
             currencyFrom = "USD",
             currencyTo = "EUR",
             rate = BigDecimal("1.2"),
-            createAt = Instant.parse("2023-01-01T00:00:00.00Z"),
+            createAt = parse("2023-01-01T00:00:00.00Z"),
         )
 
         // when
