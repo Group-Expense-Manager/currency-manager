@@ -9,6 +9,7 @@ import pl.edu.agh.gem.headers.HeadersUtils.withAppAcceptType
 import pl.edu.agh.gem.paths.Paths.EXTERNAL
 import pl.edu.agh.gem.paths.Paths.INTERNAL
 import java.net.URI
+import java.time.Instant
 
 @Component
 @Lazy
@@ -29,5 +30,25 @@ class ServiceTestClient(applicationContext: WebApplicationContext) {
             .uri(URI("$EXTERNAL/currencies"))
             .headers { it.withAppAcceptType() }
             .exchange()
+    }
+
+    fun getInternalExchangeRate(currencyFrom:String,currencyTo:String,date: Instant?): ResponseSpec {
+        return webClient.get()
+                .uri(getExchangeRateUri(EXTERNAL,currencyFrom, currencyTo, date))
+                .headers { it.withAppAcceptType() }
+                .exchange()
+    }
+
+    fun getExternalExchangeRate(currencyFrom:String,currencyTo:String,date: Instant?): ResponseSpec {
+        return webClient.get()
+                .uri(getExchangeRateUri(INTERNAL,currencyFrom, currencyTo, date))
+                .headers { it.withAppAcceptType() }
+                .exchange()
+    }
+    
+    private fun getExchangeRateUri(type:String,currencyFrom: String, currencyTo: String, date: Instant?): URI {
+        return date?.let {
+            URI("$type/currencies/from/$currencyFrom/to/$currencyTo/?date=$date")
+        } ?: URI("$type/currencies/from/$currencyFrom/to/$currencyTo/")
     }
 }
