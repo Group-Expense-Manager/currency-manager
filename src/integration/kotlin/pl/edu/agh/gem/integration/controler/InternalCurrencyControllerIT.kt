@@ -33,14 +33,14 @@ class InternalCurrencyControllerIT(
     should("get exchange rate successfully") {
         // when
         val exchangeRate = createExchangeRate(
-                currencyTo = "PLN",
-                currencyFrom = "USD",
-                rate = "3.75"
+            currencyTo = "PLN",
+            currencyFrom = "USD",
+            rate = "3.75",
         )
         val response = service.getInternalExchangeRate(
-                currencyTo = exchangeRate.currencyTo,
-                currencyFrom = exchangeRate.currencyFrom,
-                date = exchangeRate.createAt
+            currencyTo = exchangeRate.currencyTo,
+            currencyFrom = exchangeRate.currencyFrom,
+            date = exchangeRate.createAt,
         )
 
         // then
@@ -56,14 +56,14 @@ class InternalCurrencyControllerIT(
     should("get exchange rate successfully when date is null") {
         // when
         val exchangeRate = createExchangeRate(
-                currencyTo = "PLN",
-                currencyFrom = "USD",
-                rate = "3.75"
+            currencyTo = "PLN",
+            currencyFrom = "USD",
+            rate = "3.75",
         )
         val response = service.getInternalExchangeRate(
-                currencyTo = exchangeRate.currencyTo,
-                currencyFrom = exchangeRate.currencyFrom,
-                date = null
+            currencyTo = exchangeRate.currencyTo,
+            currencyFrom = exchangeRate.currencyFrom,
+            date = null,
         )
 
         // then
@@ -79,13 +79,13 @@ class InternalCurrencyControllerIT(
     should("response with NOT_FOUND when exchange rate not found") {
         // when
         val exchangeRate = createExchangeRate(
-                currencyTo = "PLN",
-                currencyFrom = "CZK",
+            currencyTo = "PLN",
+            currencyFrom = "CZK",
         )
         val response = service.getInternalExchangeRate(
-                currencyTo = exchangeRate.currencyTo,
-                currencyFrom = exchangeRate.currencyFrom,
-                date = null
+            currencyTo = exchangeRate.currencyTo,
+            currencyFrom = exchangeRate.currencyFrom,
+            date = null,
         )
 
         // then

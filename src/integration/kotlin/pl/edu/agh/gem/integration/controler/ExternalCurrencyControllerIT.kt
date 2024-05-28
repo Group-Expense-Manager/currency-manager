@@ -33,19 +33,19 @@ class ExternalCurrencyControllerIT(
     should("get exchange rate successfully") {
         // when
         val exchangeRate = createExchangeRate(
-                currencyTo = "PLN",
-                currencyFrom = "USD",
-                rate = "3.75"
+            currencyTo = "PLN",
+            currencyFrom = "USD",
+            rate = "3.75",
         )
         val response = service.getExternalExchangeRate(
-                currencyTo = exchangeRate.currencyTo,
-                currencyFrom = exchangeRate.currencyFrom,
-                date = exchangeRate.createAt
+            currencyTo = exchangeRate.currencyTo,
+            currencyFrom = exchangeRate.currencyFrom,
+            date = exchangeRate.createAt,
         )
 
         // then
         response shouldHaveHttpStatus OK
-        response.shouldBody<ExternalExchangeRateResponse> { 
+        response.shouldBody<ExternalExchangeRateResponse> {
             currencyFrom shouldBe exchangeRate.currencyFrom
             currencyTo shouldBe exchangeRate.currencyTo
             rate shouldBe exchangeRate.rate
@@ -56,14 +56,14 @@ class ExternalCurrencyControllerIT(
     should("get exchange rate successfully when date is null") {
         // when
         val exchangeRate = createExchangeRate(
-                currencyTo = "PLN",
-                currencyFrom = "USD",
-                rate = "3.75"
+            currencyTo = "PLN",
+            currencyFrom = "USD",
+            rate = "3.75",
         )
         val response = service.getExternalExchangeRate(
-                currencyTo = exchangeRate.currencyTo,
-                currencyFrom = exchangeRate.currencyFrom,
-                date = null
+            currencyTo = exchangeRate.currencyTo,
+            currencyFrom = exchangeRate.currencyFrom,
+            date = null,
         )
 
         // then
@@ -79,14 +79,14 @@ class ExternalCurrencyControllerIT(
     should("response with NOT_FOUND when exchange rate not found") {
         // when
         val exchangeRate = createExchangeRate(
-                currencyTo = "PLN",
-                currencyFrom = "CZK",
-                rate = "1.0"
+            currencyTo = "PLN",
+            currencyFrom = "CZK",
+            rate = "1.0",
         )
         val response = service.getExternalExchangeRate(
-                currencyTo = exchangeRate.currencyTo,
-                currencyFrom = exchangeRate.currencyFrom,
-                date = null
+            currencyTo = exchangeRate.currencyTo,
+            currencyFrom = exchangeRate.currencyFrom,
+            date = null,
         )
 
         // then
@@ -96,5 +96,4 @@ class ExternalCurrencyControllerIT(
             errors.first().code shouldBe MissingExchangeRateException::class.simpleName
         }
     }
-
 },)

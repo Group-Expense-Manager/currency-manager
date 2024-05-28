@@ -4,7 +4,6 @@ import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.shouldBe
 import pl.edu.agh.gem.internal.model.ExchangeRate
 import java.math.BigDecimal
-import java.time.Instant
 import java.time.Instant.parse
 
 class InternalExchangeRateResponseTest : ShouldSpec({
