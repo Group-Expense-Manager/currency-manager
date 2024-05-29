@@ -1,7 +1,6 @@
 package pl.edu.agh.gem.integration.controler
 
 import io.kotest.matchers.collections.shouldContainExactly
-import io.kotest.matchers.shouldBe
 import org.springframework.http.HttpStatus.OK
 import pl.edu.agh.gem.assertion.shouldBody
 import pl.edu.agh.gem.assertion.shouldHaveHttpStatus
