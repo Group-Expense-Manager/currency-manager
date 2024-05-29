@@ -24,6 +24,7 @@ class InternalCurrencyController(
 ) {
 
     @GetMapping(produces = [APPLICATION_JSON_INTERNAL_VER_1])
+    @ResponseStatus(OK)
     fun getAvailableCurrencies(): InternalAvailableCurrenciesResponse {
         return currencyService.getAvailableCurrencies().toInternalAvailableCurrenciesResponse()
     }
