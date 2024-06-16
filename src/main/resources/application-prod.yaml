@@ -1,4 +1,4 @@
-data:
-  mongodb:
-    uri: mongodb + srv ://<username>:<pwd>@<cluster>.mongodb.net/<dbname>
-
+spring:
+  data:
+    mongodb:
+      uri: ${CURRENCY_MANAGER_DB_URI}
