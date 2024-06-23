@@ -10,3 +10,14 @@ class CurrencyConfig
 data class AvailableCurrenciesProperties(
     val codes: List<String>,
 )
+
+@ConfigurationProperties(prefix = "exchange-rates")
+data class ExchangeRatesProperties(
+    val rates: List<StaticExchangeRate>,
+)
+
+data class StaticExchangeRate(
+    val baseCurrency: String,
+    val targetCurrency: String,
+    val rate: String,
+)

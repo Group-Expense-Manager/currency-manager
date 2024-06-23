@@ -6,12 +6,14 @@ import io.kotest.matchers.collections.shouldHaveSize
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
 import pl.edu.agh.gem.config.AvailableCurrenciesProperties
+import pl.edu.agh.gem.config.ExchangeRatesProperties
 import pl.edu.agh.gem.internal.model.Currency
 
 class CurrencyServiceTest : ShouldSpec({
 
     val availableCurrenciesProperties = mock<AvailableCurrenciesProperties>()
-    val currencyService = CurrencyService(availableCurrenciesProperties)
+    val exchangeRatesProperties = mock<ExchangeRatesProperties>()
+    val currencyService = CurrencyService(availableCurrenciesProperties, exchangeRatesProperties)
 
     should("return the list of available currencies") {
         // given
