@@ -7,5 +7,5 @@ data class ExchangeRate(
     val currencyFrom: String,
     val currencyTo: String,
     val rate: BigDecimal,
-    val createAt: Instant,
+    val createdAt: Instant,
 )

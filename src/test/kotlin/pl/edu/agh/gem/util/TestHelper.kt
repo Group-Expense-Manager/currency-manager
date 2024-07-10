@@ -8,10 +8,10 @@ fun createExchangeRate(
     currencyFrom: String = "USD",
     currencyTo: String = "EUR",
     rate: String = "1.0",
-    createAt: Instant = parse("2023-01-01T00:00:00.00Z"),
+    createdAt: Instant = parse("2023-01-01T00:00:00.00Z"),
 ) = ExchangeRate(
     currencyFrom = currencyFrom,
     currencyTo = currencyTo,
     rate = rate.toBigDecimal(),
-    createAt = createAt,
+    createdAt = createdAt,
 )

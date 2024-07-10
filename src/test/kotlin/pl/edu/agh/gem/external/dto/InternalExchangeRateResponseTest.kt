@@ -8,13 +8,13 @@ import java.time.Instant.parse
 
 class InternalExchangeRateResponseTest : ShouldSpec({
 
-    should("correctly map ExchangeRate to ExternalExchangeRateResponse") {
+    should("correctly map ExchangeRate to InternalExchangeRateResponse") {
         // given
         val exchangeRate = ExchangeRate(
             currencyFrom = "USD",
             currencyTo = "EUR",
             rate = BigDecimal("1.2"),
-            createAt = parse("2023-01-01T00:00:00.00Z"),
+            createdAt = parse("2023-01-01T00:00:00.00Z"),
         )
 
         // when
@@ -25,7 +25,7 @@ class InternalExchangeRateResponseTest : ShouldSpec({
             it.currencyFrom shouldBe exchangeRate.currencyFrom
             it.currencyTo shouldBe exchangeRate.currencyTo
             it.rate shouldBe exchangeRate.rate
-            it.createAt shouldBe exchangeRate.createAt
+            it.createdAt shouldBe exchangeRate.createdAt
         }
     }
 },)

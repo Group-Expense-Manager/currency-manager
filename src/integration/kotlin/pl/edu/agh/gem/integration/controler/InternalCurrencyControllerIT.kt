@@ -40,7 +40,7 @@ class InternalCurrencyControllerIT(
         val response = service.getInternalExchangeRate(
             currencyTo = exchangeRate.currencyTo,
             currencyFrom = exchangeRate.currencyFrom,
-            date = exchangeRate.createAt,
+            date = exchangeRate.createdAt,
         )
 
         // then
@@ -49,7 +49,7 @@ class InternalCurrencyControllerIT(
             currencyFrom shouldBe exchangeRate.currencyFrom
             currencyTo shouldBe exchangeRate.currencyTo
             rate shouldBe exchangeRate.rate
-            createAt shouldBe exchangeRate.createAt
+            createdAt shouldBe exchangeRate.createdAt
         }
     }
 
@@ -72,7 +72,7 @@ class InternalCurrencyControllerIT(
             currencyFrom shouldBe exchangeRate.currencyFrom
             currencyTo shouldBe exchangeRate.currencyTo
             rate shouldBe exchangeRate.rate
-            createAt.shouldNotBeNull()
+            createdAt.shouldNotBeNull()
         }
     }
 

@@ -8,12 +8,12 @@ data class InternalExchangeRateResponse(
     val currencyFrom: String,
     val currencyTo: String,
     val rate: BigDecimal,
-    val createAt: Instant,
+    val createdAt: Instant,
 )
 
 fun ExchangeRate.toInternalExchangeRateResponse() = InternalExchangeRateResponse(
     currencyFrom = currencyFrom,
     currencyTo = currencyTo,
     rate = rate,
-    createAt = createAt,
+    createdAt = createdAt,
 )
