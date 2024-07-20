@@ -13,7 +13,7 @@ class ExternalExchangeRateResponseTest : ShouldSpec({
         val exchangeRate = ExchangeRate(
             currencyFrom = "USD",
             currencyTo = "EUR",
-            rate = BigDecimal("1.2"),
+            exchangeRate = BigDecimal("1.2"),
             createdAt = parse("2023-01-01T00:00:00.00Z"),
         )
 
@@ -24,7 +24,7 @@ class ExternalExchangeRateResponseTest : ShouldSpec({
         externalExchangeRateResponse.also {
             it.currencyFrom shouldBe exchangeRate.currencyFrom
             it.currencyTo shouldBe exchangeRate.currencyTo
-            it.rate shouldBe exchangeRate.rate
+            it.rate shouldBe exchangeRate.exchangeRate
             it.createdAt shouldBe exchangeRate.createdAt
         }
     }

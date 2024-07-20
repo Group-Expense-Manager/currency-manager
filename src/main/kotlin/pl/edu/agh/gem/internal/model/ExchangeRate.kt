@@ -6,6 +6,8 @@ import java.time.Instant
 data class ExchangeRate(
     val currencyFrom: String,
     val currencyTo: String,
-    val rate: BigDecimal,
+    val exchangeRate: BigDecimal,
     val createdAt: Instant,
+    val forDate: Instant,
+    val validTo: Instant,
 )

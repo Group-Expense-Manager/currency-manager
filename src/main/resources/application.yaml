@@ -41,3 +41,203 @@ exchange-rates:
     - base-currency: PLN
       target-currency: EUR
       rate: 0.23
+
+currency-exchange-job-executor:
+  corePoolSize: 10
+  maxPoolSize: 10
+  queueCapacity: 10
+
+currency-exchange-job-producer:
+  corePoolSize: 1
+  maxPoolSize: 1
+  queueCapacity: 1
+
+currency-exchange-job-processor:
+  lockTime: 5m
+  emptyCandidateDelay: 1h
+  retryDelays:
+    - 1m
+    - 5m
+    - 10m
+    - 30m
+    - 1h
+    - 4h
+    - 12h
+    - 24h
+
+currency-exchange-plan-executor:
+  corePoolSize: 10
+  maxPoolSize: 10
+  queueCapacity: 10
+
+currency-exchange-plan-producer:
+  corePoolSize: 1
+  maxPoolSize: 1
+  queueCapacity: 1
+
+currency-exchange-plan-processor:
+  lockTime: 5m
+  emptyCandidateDelay: 1h
+  retryDelay: 10m
+  nextTimeFromMidnight: 1d
+
+nbp:
+  url: https://api.nbp.pl
+  connect-timeout: 1000ms
+  read-timeout: 1000ms
+  table:
+    A:
+      validDuration: 1d
+      currencies:
+        - THB
+        - USD
+        - AUD
+        - HKD
+        - CAD
+        - NZD
+        - SGD
+        - EUR
+        - HUF
+        - CHF
+        - GBP
+        - UAH
+        - JPY
+        - CZK
+        - DKK
+        - ISK
+        - NOK
+        - SEK
+        - RON
+        - BGN
+        - TRY
+        - ILS
+        - CLP
+        - PHP
+        - MXN
+        - ZAR
+        - BRL
+        - MYR
+        - IDR
+        - INR
+        - KRW
+        - CNY
+        - XDR
+    B:
+      validDuration: 7d
+      currencies:
+        - AFN
+        - MGA
+        - PAB
+        - ETB
+        - VES
+        - BOB
+        - CRC
+        - SVC
+        - NIO
+        - GMD
+        - MKD
+        - DZD
+        - BHD
+        - IQD
+        - JOD
+        - KWD
+        - LYD
+        - RSD
+        - TND
+        - MAD
+        - AED
+        - STN
+        - BSD
+        - BBD
+        - BZD
+        - BND
+        - FJD
+        - GYD
+        - JMD
+        - LRD
+        - NAD
+        - SRD
+        - TTD
+        - XCD
+        - SBD
+        - ZWL
+        - VND
+        - AMD
+        - CVE
+        - AWG
+        - BIF
+        - XOF
+        - XAF
+        - XPF
+        - DJF
+        - GNF
+        - KMF
+        - CDF
+        - RWF
+        - EGP
+        - GIP
+        - LBP
+        - SSP
+        - SDG
+        - SYP
+        - GHS
+        - HTG
+        - PYG
+        - ANG
+        - PGK
+        - LAK
+        - MWK
+        - ZMW
+        - AOA
+        - MMK
+        - GEL
+        - MDL
+        - ALL
+        - HNL
+        - SLE
+        - SZL
+        - LSL
+        - AZN
+        - MZN
+        - NGN
+        - ERN
+        - TWD
+        - TMT
+        - MRU
+        - TOP
+        - MOP
+        - ARS
+        - DOP
+        - COP
+        - CUP
+        - UYU
+        - BWP
+        - GTQ
+        - IRR
+        - YER
+        - QAR
+        - OMR
+        - SAR
+        - KHR
+        - BYN
+        - RUB
+        - LKR
+        - MVR
+        - MUR
+        - NPR
+        - PKR
+        - SCR
+        - PEN
+        - KGS
+        - TJS
+        - UZS
+        - KES
+        - SOS
+        - TZS
+        - UGX
+        - BDT
+        - WST
+        - KZT
+        - MNT
+        - VUV
+        - BAM

@@ -14,6 +14,6 @@ data class InternalExchangeRateResponse(
 fun ExchangeRate.toInternalExchangeRateResponse() = InternalExchangeRateResponse(
     currencyFrom = currencyFrom,
     currencyTo = currencyTo,
-    rate = rate,
+    rate = exchangeRate,
     createdAt = createdAt,
 )

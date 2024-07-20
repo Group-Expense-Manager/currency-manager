@@ -48,7 +48,7 @@ class InternalCurrencyControllerIT(
         response.shouldBody<InternalExchangeRateResponse> {
             currencyFrom shouldBe exchangeRate.currencyFrom
             currencyTo shouldBe exchangeRate.currencyTo
-            rate shouldBe exchangeRate.rate
+            rate shouldBe exchangeRate.exchangeRate
             createdAt shouldBe exchangeRate.createdAt
         }
     }
@@ -71,7 +71,7 @@ class InternalCurrencyControllerIT(
         response.shouldBody<InternalExchangeRateResponse> {
             currencyFrom shouldBe exchangeRate.currencyFrom
             currencyTo shouldBe exchangeRate.currencyTo
-            rate shouldBe exchangeRate.rate
+            rate shouldBe exchangeRate.exchangeRate
             createdAt.shouldNotBeNull()
         }
     }

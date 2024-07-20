@@ -12,6 +12,6 @@ fun createExchangeRate(
 ) = ExchangeRate(
     currencyFrom = currencyFrom,
     currencyTo = currencyTo,
-    rate = rate.toBigDecimal(),
+    exchangeRate = rate.toBigDecimal(),
     createdAt = createdAt,
 )

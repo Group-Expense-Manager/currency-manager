@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.i18n.SessionLocaleResolver
 import pl.edu.agh.gem.locale.LocaleTime.EUROPE_WARSAW
+import java.time.Clock
 import java.util.Locale.ENGLISH
 import java.util.TimeZone
 
@@ -42,6 +43,11 @@ class ApplicationConfig {
     @PostConstruct
     fun init() {
         TimeZone.setDefault(TimeZone.getTimeZone(EUROPE_WARSAW))
+    }
+    
+    @Bean
+    fun clock(): Clock {
+        return Clock.systemDefaultZone()
     }
 
     companion object {
