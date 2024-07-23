@@ -7,13 +7,14 @@ import pl.edu.agh.gem.config.AvailableCurrenciesProperties
 import pl.edu.agh.gem.internal.model.ExchangeRatePlan
 import pl.edu.agh.gem.internal.persistence.ExchangeRatePlanRepository
 import java.time.Clock
+import java.time.Instant
 import java.time.LocalDate
 
 @Component
 class StartUpJob(
     private val availableCurrenciesProperties: AvailableCurrenciesProperties,
     private val exchangeRatePlanRepository: ExchangeRatePlanRepository,
-    private val clock: Clock
+    private val clock: Clock,
 ) : ApplicationRunner {
 
     override fun run(arguments: ApplicationArguments?) {
@@ -21,25 +22,29 @@ class StartUpJob(
         deleteAllNotAllowedPlans(allowedCurrencyPairs)
         insertAllAllowedPlans(allowedCurrencyPairs)
     }
-    
-    private fun insertAllAllowedPlans(allowedCurrencyPairs: List<Pair<String, String>>){
-        allowedCurrencyPairs.forEach { 
-            if(exchangeRatePlanRepository.get(it.first, it.second) == null){
-                exchangeRatePlanRepository.insert(ExchangeRatePlan(
-                        currencyFrom = it.first, 
+
+    private fun insertAllAllowedPlans(allowedCurrencyPairs: List<Pair<String, String>>) {
+        allowedCurrencyPairs.forEach {
+            if (exchangeRatePlanRepository.get(it.first, it.second) == null) {
+                exchangeRatePlanRepository.insert(
+                    ExchangeRatePlan(
+                        currencyFrom = it.first,
                         currencyTo = it.second,
-                        nextProcessAt = LocalDate.now(clock).atStartOfDay(clock.zone).toInstant()
-                ))
+                        forDate = LocalDate.now(clock).atStartOfDay(clock.zone).toInstant(),
+                        nextProcessAt = Instant.now(),
+                    ),
+                )
             }
         }
     }
-    
-    private fun deleteAllNotAllowedPlans(allowedCurrencyPairs: List<Pair<String, String>>){
+
+    private fun deleteAllNotAllowedPlans(allowedCurrencyPairs: List<Pair<String, String>>) {
         exchangeRatePlanRepository.deleteNotAllowed(allowedCurrencyPairs)
     }
-    
+
     private fun getAllPairsOfCurrencies(): List<Pair<String, String>> {
-        return availableCurrenciesProperties.codes.zip(availableCurrenciesProperties.codes)
-                .filter { it.first != it.second }
+        return availableCurrenciesProperties.codes
+            .flatMap { availableCurrenciesProperties.codes.map { other -> it to other } }
+            .filterNot { it.first == it.second }
     }
 }

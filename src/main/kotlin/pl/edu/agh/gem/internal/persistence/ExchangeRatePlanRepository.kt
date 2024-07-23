@@ -3,13 +3,13 @@ package pl.edu.agh.gem.internal.persistence
 import pl.edu.agh.gem.internal.model.ExchangeRatePlan
 
 interface ExchangeRatePlanRepository {
-    fun insert(exchangeRatePlan: ExchangeRatePlan):ExchangeRatePlan
-    fun findReadyAndDelay():ExchangeRatePlan?
+    fun insert(exchangeRatePlan: ExchangeRatePlan): ExchangeRatePlan
+    fun findReadyAndDelay(): ExchangeRatePlan?
     fun delete(currencyTo: String, currencyFrom: String)
     fun retry(exchangeRatePlan: ExchangeRatePlan)
-    fun setNextTime(exchangeRatePlan: ExchangeRatePlan):ExchangeRatePlan
+    fun setNextTime(exchangeRatePlan: ExchangeRatePlan): ExchangeRatePlan
     fun deleteNotAllowed(currencyPairs: List<Pair<String, String>>)
-    fun get(currencyFrom: String, currencyTo: String):ExchangeRatePlan?
+    fun get(currencyFrom: String, currencyTo: String): ExchangeRatePlan?
 }
 
 class ExchangePlanNotFoundException(exchangeRatePlan: ExchangeRatePlan) : RuntimeException("ExchangeRatePlan not found: $exchangeRatePlan")

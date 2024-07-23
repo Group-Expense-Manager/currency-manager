@@ -4,27 +4,44 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import pl.edu.agh.gem.internal.persistence.ExchangeRatePlanRepository
+import pl.edu.agh.gem.internal.plans.ExchangeRatePlanConsumer
+import pl.edu.agh.gem.internal.plans.ExchangeRatePlanFinder
+import pl.edu.agh.gem.internal.plans.ExchangeRatePlanProcessor
 import pl.edu.agh.gem.threads.ExecutorConfig
 import pl.edu.agh.gem.threads.ExecutorFactory
-import java.util.concurrent.Executor
 import java.time.Duration
+import java.util.concurrent.Executor
 
 @Configuration
 class CurrencyExchangePlanConfig {
-    
-    @Bean
-    @ConditionalOnProperty(prefix = Companion.CURRENCY_EXCHANGE_PROCESSOR_PREFIX, name = ["enabled"], havingValue = "true")
+
+    @Bean(destroyMethod = "destroy")
+    @ConditionalOnProperty(prefix = CURRENCY_EXCHANGE_PROCESSOR_PREFIX, name = ["enabled"], havingValue = "true")
     fun currencyExchangePlanConsumer(
         consumerExecutor: Executor,
-        currencyExchangeJobFinder: CurrencyExchangeJobFinder,
-        currencyExchangeJobManager: CurrencyExchangeJobManager,
-    ) = CurrencyExchangeProcessor {
-        val currencyExchangeJobProcessor = 
+        exchangeRatePlanFinder: ExchangeRatePlanFinder,
+        exchangeRatePlanProcessor: ExchangeRatePlanProcessor,
+    ): ExchangeRatePlanConsumer {
+        val exchangeRatePlanConsumer = ExchangeRatePlanConsumer(
+            exchangeRatePlanFinder,
+            exchangeRatePlanProcessor,
+        )
+        exchangeRatePlanConsumer.consume(consumerExecutor)
+        return exchangeRatePlanConsumer
     }
-    
+
     @Bean
-    fun 
-    
+    fun exchangeRatePlanFinder(
+        planProducerExecutor: Executor,
+        exchangeRatePlanProcessorProperties: ExchangeRatePlanProcessorProperties,
+        exchangeRatePlanRepository: ExchangeRatePlanRepository,
+    ) = ExchangeRatePlanFinder(
+        planProducerExecutor,
+        exchangeRatePlanProcessorProperties,
+        exchangeRatePlanRepository,
+    )
+
     @Bean
     fun planConsumerExecutor(
         executorFactory: ExecutorFactory,
@@ -38,7 +55,7 @@ class CurrencyExchangePlanConfig {
         )
         return executorFactory.createExecutor(config)
     }
-    
+
     @Bean
     fun planProducerExecutor(
         executorFactory: ExecutorFactory,
@@ -52,7 +69,7 @@ class CurrencyExchangePlanConfig {
         )
         return executorFactory.createExecutor(config)
     }
-    
+
     companion object {
         private const val CONSUMER_POOL = "currency-exchange-plan-consumer-pool"
         private const val PRODUCER_POOL = "currency-exchange-plan-producer-pool"
@@ -81,5 +98,3 @@ data class ExchangeRatePlanProcessorProperties(
     val retryDelay: Duration,
     val nextTimeFromMidnight: Duration,
 )
-
-

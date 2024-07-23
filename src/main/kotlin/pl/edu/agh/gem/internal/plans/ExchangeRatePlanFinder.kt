@@ -7,18 +7,18 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.time.delay
 import mu.KotlinLogging
-import pl.edu.agh.gem.config.ExchangeRateJobProcessorProperties
-import pl.edu.agh.gem.external.persistence.plan.MongoExchangeRatePlansRepository
+import pl.edu.agh.gem.config.ExchangeRatePlanProcessorProperties
 import pl.edu.agh.gem.internal.model.ExchangeRatePlan
+import pl.edu.agh.gem.internal.persistence.ExchangeRatePlanRepository
 import java.util.concurrent.Executor
 
 class ExchangeRatePlanFinder(
     private val producerExecutor: Executor,
-    private val exchangeRateJobProcessorProperties: ExchangeRateJobProcessorProperties,
-    private val exchangeRatePlansRepository: MongoExchangeRatePlansRepository
+    private val exchangeRatePlanProcessorProperties: ExchangeRatePlanProcessorProperties,
+    private val exchangeRatePlanRepository: ExchangeRatePlanRepository,
 ) {
     fun findJobToProcess() = flow {
-        while ( currentCoroutineContext().isActive) {
+        while (currentCoroutineContext().isActive) {
             val exchangeRatePlan = findExchangeRateJob()
             exchangeRatePlan?.let {
                 emit(it)
@@ -30,9 +30,8 @@ class ExchangeRatePlanFinder(
 
     private fun findExchangeRateJob(): ExchangeRatePlan? {
         try {
-            return exchangeRatePlansRepository.findReadyAndDelay()
-        }
-        catch (e: Exception) {
+            return exchangeRatePlanRepository.findReadyAndDelay()
+        } catch (e: Exception) {
             log.error("Error while finding currency exchange job to process", e)
             return null
         }
@@ -41,7 +40,7 @@ class ExchangeRatePlanFinder(
     private suspend fun waitOnEmpty(exchangeRatePlan: ExchangeRatePlan?) {
         if (exchangeRatePlan == null) {
             log.debug("No exchange rate job to process. Waiting for new job")
-            delay(exchangeRateJobProcessorProperties.emptyCandidateDelay)
+            delay(exchangeRatePlanProcessorProperties.emptyCandidateDelay)
         }
     }
 

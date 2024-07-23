@@ -9,6 +9,8 @@ data class ExternalExchangeRateResponse(
     val currencyTo: String,
     val rate: BigDecimal,
     val createdAt: Instant,
+    val forDate: Instant,
+    val validTo: Instant,
 )
 
 fun ExchangeRate.toExternalExchangeRateResponse() = ExternalExchangeRateResponse(
@@ -16,4 +18,6 @@ fun ExchangeRate.toExternalExchangeRateResponse() = ExternalExchangeRateResponse
     currencyTo = currencyTo,
     rate = exchangeRate,
     createdAt = createdAt,
+    forDate = forDate,
+    validTo = validTo,
 )

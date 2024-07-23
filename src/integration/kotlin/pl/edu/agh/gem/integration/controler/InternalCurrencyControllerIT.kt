@@ -13,7 +13,7 @@ import pl.edu.agh.gem.external.dto.InternalAvailableCurrenciesResponse
 import pl.edu.agh.gem.external.dto.InternalExchangeRateResponse
 import pl.edu.agh.gem.integration.BaseIntegrationSpec
 import pl.edu.agh.gem.integration.ability.ServiceTestClient
-import pl.edu.agh.gem.internal.service.MissingExchangeRateException
+import pl.edu.agh.gem.internal.persistence.MissingExchangeRateException
 import pl.edu.agh.gem.util.createExchangeRate
 
 class InternalCurrencyControllerIT(

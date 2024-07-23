@@ -3,18 +3,19 @@ package pl.edu.agh.gem.external.persistence.job
 import org.springframework.data.mongodb.core.mapping.Document
 import pl.edu.agh.gem.internal.job.ExchangeRateJobState
 import pl.edu.agh.gem.internal.model.ExchangeRateJob
+import java.math.BigDecimal
 import java.time.Instant
 
 @Document("Jobs")
-data class ExchangeRateJobEntity (
-    val id:String,
+data class ExchangeRateJobEntity(
+    val id: String,
     val currencyFrom: String,
     val currencyTo: String,
-    val exchangeRate: String?,
+    val exchangeRate: BigDecimal?,
     val state: ExchangeRateJobState,
-    val createdAt: Instant = Instant.now(),
+    val forDate: Instant,
     val nextProcessAt: Instant = Instant.now(),
-    val retry:Long = 0,
+    val retry: Long = 0,
 )
 
 fun ExchangeRateJobEntity.toDomain(): ExchangeRateJob {
@@ -24,7 +25,7 @@ fun ExchangeRateJobEntity.toDomain(): ExchangeRateJob {
         currencyTo = currencyTo,
         exchangeRate = exchangeRate,
         state = state,
-        createdAt = createdAt,
+        forDate = forDate,
         nextProcessAt = nextProcessAt,
         retry = retry,
     )
@@ -37,9 +38,8 @@ fun ExchangeRateJob.toEntity(): ExchangeRateJobEntity {
         currencyTo = currencyTo,
         exchangeRate = exchangeRate,
         state = state,
-        createdAt = createdAt,
+        forDate = forDate,
         nextProcessAt = nextProcessAt,
         retry = retry,
     )
 }
-

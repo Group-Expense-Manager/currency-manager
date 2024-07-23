@@ -2,10 +2,11 @@ package pl.edu.agh.gem.internal.job
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import pl.edu.agh.gem.internal.model.ExchangeRateJob
-import pl.edu.agh.gem.internal.model.ExchangeRatePlan
+import java.util.concurrent.Executor
 
 class ExchangeRateJobConsumer(
     private val exchangeRateJobFinder: ExchangeRateJobFinder,
@@ -14,12 +15,12 @@ class ExchangeRateJobConsumer(
 
     private var job: Job? = null
 
-    fun consume(scope: CoroutineScope) {
-        job = scope.launch {
+    fun consume(consumerExecutor: Executor) {
+        job = CoroutineScope(consumerExecutor.asCoroutineDispatcher()).launch {
             exchangeRateJobFinder.findJobToProcess()
-                    .collect { exchangeRateJob ->
-                        processWithExceptionHandling(exchangeRateJob)
-                    }
+                .collect { exchangeRateJob ->
+                    processWithExceptionHandling(exchangeRateJob)
+                }
         }
     }
 
@@ -32,7 +33,7 @@ class ExchangeRateJobConsumer(
     }
 
     fun destroy() {
-        job?.let {
+        job?.also {
             log.info { "Cancelling exchange rate job consumer job" }
             it.cancel()
         }
@@ -42,4 +43,3 @@ class ExchangeRateJobConsumer(
         private val log = KotlinLogging.logger {}
     }
 }
-

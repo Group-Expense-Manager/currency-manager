@@ -1017,10 +1017,11 @@ HbmartinRuleSet:
   AvoidMutableCollections:
     active: true
   AvoidVarsExceptWithDelegate:
-    active: true
+    active: false
     allowedDelegates:
       - 'remember\w*'
       - 'mutableState\w*'
+
   DontForceCast:
     active: true
   MutableTypeShouldBePrivate:
@@ -1054,11 +1055,11 @@ compiler:
 impure:
   active: true
   LoopDefinition:
-    active: true
+    active: false
   ReturnStatement:
     active: false
   VariableDefinition:
-    active: true
+    active: false
   ReturnUnit:
     active: true
     ignoreFunctionType: false

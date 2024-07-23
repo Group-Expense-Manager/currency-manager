@@ -10,16 +10,16 @@ import org.springframework.stereotype.Repository
 import pl.edu.agh.gem.config.ExchangeRateJobProcessorProperties
 import pl.edu.agh.gem.internal.model.ExchangeRateJob
 import pl.edu.agh.gem.internal.persistence.ExchangeRateJobRepository
+import pl.edu.agh.gem.internal.persistence.MissingExchangeRateJobException
 import java.time.Clock
 import java.time.Duration
-import java.time.Instant
 
 @Repository
 class MongoExchangeRateJobRepository(
     private val mongoOperations: MongoOperations,
     private val exchangeRateJobProcessorProperties: ExchangeRateJobProcessorProperties,
-    private val clock: Clock
-): ExchangeRateJobRepository {
+    private val clock: Clock,
+) : ExchangeRateJobRepository {
     override fun save(exchangeRateJob: ExchangeRateJob): ExchangeRateJob {
         return mongoOperations.save(exchangeRateJob.toEntity()).toDomain()
     }
@@ -36,7 +36,7 @@ class MongoExchangeRateJobRepository(
         val update = Update().set(ExchangeRateJobEntity::nextProcessAt.name, clock.instant().plus(getDelay(exchangeRateJob.retry)))
         val options = FindAndModifyOptions.options().returnNew(true).upsert(false)
         return mongoOperations.findAndModify(query, update, options, ExchangeRateJobEntity::class.java)?.toDomain()
-            ?: throw IllegalStateException("ExchangeRateJob with id ${exchangeRateJob.id} not found")
+            ?: throw MissingExchangeRateJobException()
     }
 
     override fun remove(exchangeRateJob: ExchangeRateJob) {
@@ -47,5 +47,4 @@ class MongoExchangeRateJobRepository(
     private fun getDelay(retry: Long): Duration {
         return exchangeRateJobProcessorProperties.retryDelays.getOrNull(retry.toInt()) ?: exchangeRateJobProcessorProperties.retryDelays.last()
     }
-    
 }

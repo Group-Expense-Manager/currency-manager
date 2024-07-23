@@ -15,6 +15,8 @@ class ExternalExchangeRateResponseTest : ShouldSpec({
             currencyTo = "EUR",
             exchangeRate = BigDecimal("1.2"),
             createdAt = parse("2023-01-01T00:00:00.00Z"),
+            forDate = parse("2023-01-01T00:00:00.00Z"),
+            validTo = parse("2023-01-01T00:00:00.00Z"),
         )
 
         // when
@@ -26,6 +28,8 @@ class ExternalExchangeRateResponseTest : ShouldSpec({
             it.currencyTo shouldBe exchangeRate.currencyTo
             it.rate shouldBe exchangeRate.exchangeRate
             it.createdAt shouldBe exchangeRate.createdAt
+            it.forDate shouldBe exchangeRate.forDate
+            it.validTo shouldBe exchangeRate.validTo
         }
     }
 },)

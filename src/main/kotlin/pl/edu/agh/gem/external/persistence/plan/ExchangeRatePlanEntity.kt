@@ -17,23 +17,23 @@ data class ExchangeRatePlanEntity(
 )
 
 data class CompositeKey(
-        val currencyFrom: String,
-        val currencyTo: String,
+    val currencyFrom: String,
+    val currencyTo: String,
 )
 
 fun ExchangeRatePlanEntity.toDomain(): ExchangeRatePlan {
     return ExchangeRatePlan(
-            currencyFrom = id.currencyFrom,
-            currencyTo = id.currencyTo,
-            nextProcessAt = nextProcessAt,
-            forDate = forDate,
+        currencyFrom = id.currencyFrom,
+        currencyTo = id.currencyTo,
+        nextProcessAt = nextProcessAt,
+        forDate = forDate,
     )
 }
 
 fun ExchangeRatePlan.toEntity(): ExchangeRatePlanEntity {
     return ExchangeRatePlanEntity(
-            id = CompositeKey(currencyFrom, currencyTo),
-            nextProcessAt = nextProcessAt,
-            forDate = forDate,
+        id = CompositeKey(currencyFrom, currencyTo),
+        nextProcessAt = nextProcessAt,
+        forDate = forDate,
     )
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import pl.edu.agh.gem.error.SimpleErrorsHolder
 import pl.edu.agh.gem.error.handleError
 import pl.edu.agh.gem.error.handleNotValidException
-import pl.edu.agh.gem.internal.service.MissingExchangeRateException
+import pl.edu.agh.gem.internal.persistence.MissingExchangeRateException
 
 @ControllerAdvice
 @Order(LOWEST_PRECEDENCE)

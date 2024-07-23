@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.MongoOperations
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
+import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.stereotype.Repository
 import pl.edu.agh.gem.config.ExchangeRatePlanProcessorProperties
 import pl.edu.agh.gem.internal.model.ExchangeRatePlan
@@ -17,9 +18,9 @@ import java.time.LocalDate
 class MongoExchangeRatePlansRepository(
     private val mongoOperations: MongoOperations,
     private val clock: Clock,
-    private val exchangeRatePlanProcessorProperties: ExchangeRatePlanProcessorProperties
+    private val exchangeRatePlanProcessorProperties: ExchangeRatePlanProcessorProperties,
 ) : ExchangeRatePlanRepository {
-    
+
     override fun insert(exchangeRatePlan: ExchangeRatePlan): ExchangeRatePlan {
         return mongoOperations.insert(exchangeRatePlan.toEntity()).toDomain()
     }
@@ -32,22 +33,35 @@ class MongoExchangeRatePlansRepository(
     }
 
     override fun delete(currencyTo: String, currencyFrom: String) {
-        val query = Query.query(Criteria.where(ExchangeRatePlanEntity::id.name).`is`(CompositeKey(currencyFrom, currencyTo)))
+        val query = Query.query(Criteria.where(ExchangeRatePlanEntity::id.name).isEqualTo(CompositeKey(currencyFrom, currencyTo)))
         mongoOperations.remove(query, ExchangeRatePlanEntity::class.java)
     }
 
     override fun retry(exchangeRatePlan: ExchangeRatePlan) {
-        val query = Query.query(Criteria.where(ExchangeRatePlanEntity::id.name).`is`(CompositeKey(exchangeRatePlan.currencyFrom, exchangeRatePlan.currencyTo)))
-        val update = Update().set(ExchangeRatePlanEntity::nextProcessAt.name, clock.instant().plus(exchangeRatePlanProcessorProperties.retryDelay))
+        val query = Query.query(
+            Criteria.where(ExchangeRatePlanEntity::id.name).isEqualTo(CompositeKey(exchangeRatePlan.currencyFrom, exchangeRatePlan.currencyTo)),
+        )
+        val update = Update()
+            .set(ExchangeRatePlanEntity::nextProcessAt.name, clock.instant().plus(exchangeRatePlanProcessorProperties.retryDelay))
         mongoOperations.updateFirst(query, update, ExchangeRatePlanEntity::class.java)
     }
 
-    override fun setNextTime(exchangeRatePlan: ExchangeRatePlan) : ExchangeRatePlan {
+    override fun setNextTime(exchangeRatePlan: ExchangeRatePlan): ExchangeRatePlan {
         val options = FindAndModifyOptions().returnNew(false).upsert(false)
-        val query = Query.query(Criteria.where(ExchangeRatePlanEntity::id.name).`is`(CompositeKey(exchangeRatePlan.currencyFrom, exchangeRatePlan.currencyTo)))
-        val nextTimeDate = LocalDate.ofInstant(exchangeRatePlan.forDate,clock.zone).plus(exchangeRatePlanProcessorProperties.nextTimeFromMidnight).atStartOfDay(clock.zone).toInstant()
-        val update = Update().set(ExchangeRatePlanEntity::nextProcessAt.name, nextTimeDate).set(ExchangeRatePlanEntity::forDate.name, nextTimeDate)
-        return mongoOperations.findAndModify(query, update, options, ExchangeRatePlanEntity::class.java)?.toDomain() ?: throw ExchangePlanNotFoundException(exchangeRatePlan)
+        val query = Query.query(
+            Criteria.where(ExchangeRatePlanEntity::id.name).isEqualTo(CompositeKey(exchangeRatePlan.currencyFrom, exchangeRatePlan.currencyTo)),
+        )
+        val nextTimeDate = LocalDate.ofInstant(exchangeRatePlan.forDate, clock.zone)
+            .plus(exchangeRatePlanProcessorProperties.nextTimeFromMidnight)
+            .atStartOfDay(clock.zone)
+            .toInstant()
+        val update = Update()
+            .set(ExchangeRatePlanEntity::nextProcessAt.name, nextTimeDate)
+            .set(ExchangeRatePlanEntity::forDate.name, nextTimeDate)
+        return mongoOperations
+            .findAndModify(query, update, options, ExchangeRatePlanEntity::class.java)
+            ?.toDomain()
+            ?: throw ExchangePlanNotFoundException(exchangeRatePlan)
     }
 
     override fun deleteNotAllowed(currencyPairs: List<Pair<String, String>>) {
@@ -55,8 +69,8 @@ class MongoExchangeRatePlansRepository(
         mongoOperations.remove(query, ExchangeRatePlanEntity::class.java)
     }
 
-    override fun get(currencyFrom: String, currencyTo: String) : ExchangeRatePlan? {
-        val query = Query.query(Criteria.where(ExchangeRatePlanEntity::id.name).`is`(CompositeKey(currencyFrom, currencyTo)))
+    override fun get(currencyFrom: String, currencyTo: String): ExchangeRatePlan? {
+        val query = Query.query(Criteria.where(ExchangeRatePlanEntity::id.name).isEqualTo(CompositeKey(currencyFrom, currencyTo)))
         return mongoOperations.findOne(query, ExchangeRatePlanEntity::class.java)?.toDomain()
     }
 }

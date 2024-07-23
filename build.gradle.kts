@@ -92,7 +92,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    
+
     implementation(libs.kotlinlogging)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.lib.gem)

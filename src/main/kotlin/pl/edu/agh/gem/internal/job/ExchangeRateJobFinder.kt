@@ -15,36 +15,35 @@ import java.util.concurrent.Executor
 class ExchangeRateJobFinder(
     private val producerExecutor: Executor,
     private val exchangeRateJobProcessorProperties: ExchangeRateJobProcessorProperties,
-    private val exchangeRateJobRepository: ExchangeRateJobRepository
+    private val exchangeRateJobRepository: ExchangeRateJobRepository,
 ) {
     fun findJobToProcess() = flow {
-        while ( currentCoroutineContext().isActive) {
+        while (currentCoroutineContext().isActive) {
             val exchangeRateJob = findExchangeRateJob()
-            exchangeRateJob?.let { 
+            exchangeRateJob?.let {
                 emit(it)
                 log.info { "Emitted exchange rate job : $it" }
             }
             waitOnEmpty(exchangeRateJob)
         }
     }.flowOn(producerExecutor.asCoroutineDispatcher())
-    
+
     private fun findExchangeRateJob(): ExchangeRateJob? {
         try {
             return exchangeRateJobRepository.findJobToProcessAndLock()
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             log.error("Error while finding currency exchange job to process", e)
             return null
         }
     }
-    
+
     private suspend fun waitOnEmpty(exchangeRateJob: ExchangeRateJob?) {
         if (exchangeRateJob == null) {
             log.debug("No exchange rate job to process. Waiting for new job")
             delay(exchangeRateJobProcessorProperties.emptyCandidateDelay)
         }
     }
-    
+
     companion object {
         private val log = KotlinLogging.logger {}
     }

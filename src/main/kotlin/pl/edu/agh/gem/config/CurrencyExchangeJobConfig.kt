@@ -4,27 +4,44 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import pl.edu.agh.gem.internal.job.ExchangeRateJobConsumer
+import pl.edu.agh.gem.internal.job.ExchangeRateJobFinder
+import pl.edu.agh.gem.internal.job.ExchangeRateJobProcessor
+import pl.edu.agh.gem.internal.persistence.ExchangeRateJobRepository
 import pl.edu.agh.gem.threads.ExecutorConfig
 import pl.edu.agh.gem.threads.ExecutorFactory
-import java.util.concurrent.Executor
 import java.time.Duration
+import java.util.concurrent.Executor
 
 @Configuration
 class CurrencyExchangeJobConfig {
-    
-    @Bean
-    @ConditionalOnProperty(prefix = Companion.CURRENCY_EXCHANGE_PROCESSOR_PREFIX, name = ["enabled"], havingValue = "true")
+
+    @Bean(destroyMethod = "destroy")
+    @ConditionalOnProperty(prefix = CURRENCY_EXCHANGE_PROCESSOR_PREFIX, name = ["enabled"], havingValue = "true")
     fun currencyExchangeConsumer(
-        consumerExecutor: Executor,
-        currencyExchangeJobFinder: CurrencyExchangeJobFinder,
-        currencyExchangeJobManager: CurrencyExchangeJobManager,
-    ) = CurrencyExchangeProcessor {
-        val currencyExchangeJobProcessor = 
+        jobConsumerExecutor: Executor,
+        currencyExchangeRateJobFinder: ExchangeRateJobFinder,
+        currencyExchangeRateJobProcessor: ExchangeRateJobProcessor,
+    ): ExchangeRateJobConsumer {
+        val exchangeRateJobConsumer = ExchangeRateJobConsumer(
+            currencyExchangeRateJobFinder,
+            currencyExchangeRateJobProcessor,
+        )
+        exchangeRateJobConsumer.consume(jobConsumerExecutor)
+        return exchangeRateJobConsumer
     }
-    
+
     @Bean
-    fun 
-    
+    fun currencyExchangeJobFinder(
+        jobProducerExecutor: Executor,
+        exchangeRateJobProcessorProperties: ExchangeRateJobProcessorProperties,
+        exchangeRateJobRepository: ExchangeRateJobRepository,
+    ) = ExchangeRateJobFinder(
+        jobProducerExecutor,
+        exchangeRateJobProcessorProperties,
+        exchangeRateJobRepository,
+    )
+
     @Bean
     fun jobConsumerExecutor(
         executorFactory: ExecutorFactory,
@@ -38,7 +55,7 @@ class CurrencyExchangeJobConfig {
         )
         return executorFactory.createExecutor(config)
     }
-    
+
     @Bean
     fun jobProducerExecutor(
         executorFactory: ExecutorFactory,
@@ -52,7 +69,7 @@ class CurrencyExchangeJobConfig {
         )
         return executorFactory.createExecutor(config)
     }
-    
+
     companion object {
         private const val CONSUMER_POOL = "currency-exchange-job-consumer-pool"
         private const val PRODUCER_POOL = "currency-exchange-job-producer-pool"
@@ -80,4 +97,3 @@ data class ExchangeRateJobProcessorProperties(
     val emptyCandidateDelay: Duration,
     val retryDelays: List<Duration>,
 )
-

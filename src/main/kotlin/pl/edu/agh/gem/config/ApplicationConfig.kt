@@ -44,7 +44,7 @@ class ApplicationConfig {
     fun init() {
         TimeZone.setDefault(TimeZone.getTimeZone(EUROPE_WARSAW))
     }
-    
+
     @Bean
     fun clock(): Clock {
         return Clock.systemDefaultZone()

@@ -13,11 +13,11 @@ class ExchangeRatePlanProcessor(
 ) {
     fun process(exchangeRatePlan: ExchangeRatePlan) {
         exchangeRateJobRepository.save(
-                ExchangeRateJob(
-                        currencyFrom = exchangeRatePlan.currencyFrom,
-                        currencyTo = exchangeRatePlan.currencyTo,
-                        forDate = exchangeRatePlan.forDate
-                )
+            ExchangeRateJob(
+                currencyFrom = exchangeRatePlan.currencyFrom,
+                currencyTo = exchangeRatePlan.currencyTo,
+                forDate = exchangeRatePlan.forDate,
+            ),
         )
         exchangeRatePlansRepository.setNextTime(exchangeRatePlan)
     }

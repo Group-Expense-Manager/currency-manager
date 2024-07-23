@@ -11,25 +11,28 @@ data class ExchangeRateEntity(
     val currencyTo: String,
     val rate: BigDecimal,
     val createdAt: Instant,
+    val forDate: Instant,
     val validTo: Instant,
 )
 
 fun ExchangeRateEntity.toDomain(): ExchangeRate {
     return ExchangeRate(
-            currencyFrom = currencyFrom,
-            currencyTo = currencyTo,
-            exchangeRate = rate,
-            createdAt = createdAt,
-            validTo = validTo,
+        currencyFrom = currencyFrom,
+        currencyTo = currencyTo,
+        exchangeRate = rate,
+        createdAt = createdAt,
+        forDate = forDate,
+        validTo = validTo,
     )
 }
 
 fun ExchangeRate.toEntity(): ExchangeRateEntity {
     return ExchangeRateEntity(
-            currencyFrom = currencyFrom,
-            currencyTo = currencyTo,
-            rate = exchangeRate,
-            createdAt = createdAt,
-            validTo = validTo,
+        currencyFrom = currencyFrom,
+        currencyTo = currencyTo,
+        rate = exchangeRate,
+        createdAt = createdAt,
+        forDate = forDate,
+        validTo = validTo,
     )
 }
