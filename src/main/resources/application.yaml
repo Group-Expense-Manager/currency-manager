@@ -21,27 +21,6 @@ available-currencies:
     - EUR
     - PLN
 
-exchange-rates:
-  rates:
-    - base-currency: USD
-      target-currency: EUR
-      rate: 0.85
-    - base-currency: USD
-      target-currency: PLN
-      rate: 3.75
-    - base-currency: EUR
-      target-currency: USD
-      rate: 1.18
-    - base-currency: EUR
-      target-currency: PLN
-      rate: 4.42
-    - base-currency: PLN
-      target-currency: USD
-      rate: 0.27
-    - base-currency: PLN
-      target-currency: EUR
-      rate: 0.23
-
 currency-exchange-job-executor:
   corePoolSize: 10
   maxPoolSize: 10
@@ -53,6 +32,7 @@ currency-exchange-job-producer:
   queueCapacity: 1
 
 currency-exchange-job-processor:
+  enabled: true
   lockTime: 5m
   emptyCandidateDelay: 1h
   retryDelays:
@@ -76,10 +56,14 @@ currency-exchange-plan-producer:
   queueCapacity: 1
 
 currency-exchange-plan-processor:
+  enabled: true
   lockTime: 5m
   emptyCandidateDelay: 1h
   retryDelay: 10m
   nextTimeFromMidnight: 1d
+
+exchange-rates:
+  validDuration: 2d
 
 nbp:
   url: https://api.nbp.pl

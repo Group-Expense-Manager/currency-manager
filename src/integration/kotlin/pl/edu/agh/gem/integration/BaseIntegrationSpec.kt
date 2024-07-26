@@ -9,6 +9,7 @@ import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import pl.edu.agh.gem.AppRunner
 import pl.edu.agh.gem.integration.environment.ProjectConfig
+import java.time.Instant
 
 @SpringBootTest(
     classes = [AppRunner::class],
@@ -24,6 +25,8 @@ abstract class BaseIntegrationSpec(body: ShouldSpec.() -> Unit) : ShouldSpec(bod
             ProjectConfig.updateConfiguration(registry)
         }
 
+        val FIXED_TIME = Instant.parse("2021-01-01T00:00:00Z")
+        val FIXED_WENSDAY = Instant.parse("2021-01-06T00:00:00Z")
         private val logger = KotlinLogging.logger {}
     }
 }

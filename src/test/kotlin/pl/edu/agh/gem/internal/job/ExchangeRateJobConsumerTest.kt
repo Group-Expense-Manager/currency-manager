@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.flowOf
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import pl.edu.agh.gem.util.TestThreadExecutor
 import pl.edu.agh.gem.util.createExchangeRateJob
 
 class ExchangeRateJobConsumerTest : ShouldSpec({
@@ -21,9 +22,9 @@ class ExchangeRateJobConsumerTest : ShouldSpec({
         whenever(exchangeRateJobFinder.findJobToProcess()).thenReturn(flowOf(exchangeRateJob))
 
         // when
-        exchangeRateJobConsumer.consume(CurrentThreadExecutor())
+        exchangeRateJobConsumer.consume(TestThreadExecutor())
 
         // then
         verify(exchangeRateJobProcessor).processExchangeRateJob(exchangeRateJob)
     }
-})
+},)

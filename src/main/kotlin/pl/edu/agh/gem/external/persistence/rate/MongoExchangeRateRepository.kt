@@ -10,7 +10,6 @@ import pl.edu.agh.gem.internal.persistence.ExchangeRateRepository
 import pl.edu.agh.gem.internal.persistence.MissingExchangeRateException
 import java.time.Clock
 import java.time.Instant
-import java.time.LocalDate
 
 @Repository
 class MongoExchangeRateRepository(
@@ -28,7 +27,9 @@ class MongoExchangeRateRepository(
                 .and(ExchangeRateEntity::currencyTo.name)
                 .isEqualTo(currencyTo)
                 .and(ExchangeRateEntity::forDate.name)
-                .isEqualTo(LocalDate.ofInstant(date, clock.zone).atStartOfDay(clock.zone).toInstant()),
+                .lte(date)
+                .and(ExchangeRateEntity::validTo.name)
+                .gte(clock.instant()),
         )
         return mongoOperations.findOne(query, ExchangeRateEntity::class.java)?.toDomain()
             ?: throw MissingExchangeRateException(currencyTo, currencyFrom, date)

@@ -1,8 +1,8 @@
-package pl.edu.agh.gem.internal.job
+package pl.edu.agh.gem.util
 
 import java.util.concurrent.Executor
 
-class CurrentThreadExecutor : Executor {
+class TestThreadExecutor : Executor {
     override fun execute(command: Runnable) {
         command.run()
     }

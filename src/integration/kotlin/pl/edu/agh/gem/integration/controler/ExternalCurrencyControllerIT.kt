@@ -2,8 +2,9 @@ package pl.edu.agh.gem.integration.controler
 
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import org.mockito.kotlin.whenever
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.OK
 import pl.edu.agh.gem.assertion.shouldBody
@@ -13,12 +14,20 @@ import pl.edu.agh.gem.external.dto.ExternalAvailableCurrenciesResponse
 import pl.edu.agh.gem.external.dto.ExternalExchangeRateResponse
 import pl.edu.agh.gem.integration.BaseIntegrationSpec
 import pl.edu.agh.gem.integration.ability.ServiceTestClient
+import pl.edu.agh.gem.internal.persistence.ExchangeRateRepository
 import pl.edu.agh.gem.internal.persistence.MissingExchangeRateException
 import pl.edu.agh.gem.util.createExchangeRate
+import java.time.Clock
+import java.time.temporal.ChronoUnit.DAYS
 
 class ExternalCurrencyControllerIT(
     private val service: ServiceTestClient,
+    private val exchangeRateRepository: ExchangeRateRepository,
+    @SpyBean private val clock: Clock,
 ) : BaseIntegrationSpec({
+
+    whenever(clock.instant()).thenReturn(FIXED_TIME)
+
     should("get available currencies successfully") {
         // when
         val response = service.getExternalAvailableCurrencies()
@@ -31,16 +40,22 @@ class ExternalCurrencyControllerIT(
     }
 
     should("get exchange rate successfully") {
-        // when
+        // given
         val exchangeRate = createExchangeRate(
             currencyTo = "PLN",
             currencyFrom = "USD",
-            rate = "3.75",
+            rate = "3.75".toBigDecimal(),
+            forDate = FIXED_TIME,
+            createdAt = FIXED_TIME,
+            validTo = FIXED_TIME.plus(1, DAYS),
         )
+        exchangeRateRepository.save(exchangeRate)
+
+        // when
         val response = service.getExternalExchangeRate(
             currencyTo = exchangeRate.currencyTo,
             currencyFrom = exchangeRate.currencyFrom,
-            date = exchangeRate.createdAt,
+            date = exchangeRate.forDate,
         )
 
         // then
@@ -50,16 +65,23 @@ class ExternalCurrencyControllerIT(
             currencyTo shouldBe exchangeRate.currencyTo
             rate shouldBe exchangeRate.exchangeRate
             createdAt shouldBe exchangeRate.createdAt
+            forDate shouldBe exchangeRate.forDate
         }
     }
 
     should("get exchange rate successfully when date is null") {
-        // when
+        // given
         val exchangeRate = createExchangeRate(
             currencyTo = "PLN",
             currencyFrom = "USD",
-            rate = "3.75",
+            rate = "3.75".toBigDecimal(),
+            forDate = FIXED_TIME,
+            createdAt = FIXED_TIME,
+            validTo = FIXED_TIME.plus(1, DAYS),
         )
+        exchangeRateRepository.save(exchangeRate)
+
+        // when
         val response = service.getExternalExchangeRate(
             currencyTo = exchangeRate.currencyTo,
             currencyFrom = exchangeRate.currencyFrom,
@@ -72,7 +94,8 @@ class ExternalCurrencyControllerIT(
             currencyFrom shouldBe exchangeRate.currencyFrom
             currencyTo shouldBe exchangeRate.currencyTo
             rate shouldBe exchangeRate.exchangeRate
-            createdAt.shouldNotBeNull()
+            createdAt shouldBe exchangeRate.createdAt
+            forDate shouldBe exchangeRate.forDate
         }
     }
 
@@ -80,8 +103,11 @@ class ExternalCurrencyControllerIT(
         // when
         val exchangeRate = createExchangeRate(
             currencyTo = "PLN",
-            currencyFrom = "CZK",
-            rate = "1.0",
+            currencyFrom = "USD",
+            rate = "3.75".toBigDecimal(),
+            forDate = FIXED_TIME,
+            createdAt = FIXED_TIME,
+            validTo = FIXED_TIME.plus(1, DAYS),
         )
         val response = service.getExternalExchangeRate(
             currencyTo = exchangeRate.currencyTo,

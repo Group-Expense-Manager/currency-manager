@@ -8,6 +8,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinFeature.SingletonSupport
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.StrictNullChecks
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import jakarta.annotation.PostConstruct
+import mu.KotlinLogging
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.servlet.LocaleResolver
@@ -47,7 +48,7 @@ class ApplicationConfig {
 
     @Bean
     fun clock(): Clock {
-        return Clock.systemDefaultZone()
+        return Clock.systemUTC()
     }
 
     companion object {

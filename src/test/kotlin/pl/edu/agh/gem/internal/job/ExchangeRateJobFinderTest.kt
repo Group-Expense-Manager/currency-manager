@@ -7,15 +7,16 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import pl.edu.agh.gem.config.ExchangeRateJobProcessorProperties
 import pl.edu.agh.gem.internal.persistence.ExchangeRateJobRepository
+import pl.edu.agh.gem.util.TestThreadExecutor
 import pl.edu.agh.gem.util.createExchangeRateJob
 
 class ExchangeRateJobFinderTest : ShouldSpec({
     val exchangeRateJobRepository = mock<ExchangeRateJobRepository>()
     val exchangeRateJobProperties = mock<ExchangeRateJobProcessorProperties>()
     val exchangeRateJobFinder = ExchangeRateJobFinder(
-        CurrentThreadExecutor(),
+        TestThreadExecutor(),
         exchangeRateJobProperties,
-        exchangeRateJobRepository
+        exchangeRateJobRepository,
     )
 
     should("emit exchange rate job") {
@@ -31,4 +32,4 @@ class ExchangeRateJobFinderTest : ShouldSpec({
             it shouldBe exchangeRateJob
         }
     }
-})
+},)

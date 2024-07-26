@@ -36,7 +36,7 @@ class StartUpJobTest : ShouldSpec({
         whenever(clock.zone).thenReturn(Clock.systemUTC().zone)
 
         // when
-        startUpJob.run(null)
+        startUpJob.afterPropertiesSet()
 
         // then
         verify(exchangeRatePlanRepository, times(allowedCurrencyPairs.size)).insert(any())
@@ -49,7 +49,7 @@ class StartUpJobTest : ShouldSpec({
         whenever(clock.zone).thenReturn(Clock.systemUTC().zone)
 
         // when
-        startUpJob.run(null)
+        startUpJob.afterPropertiesSet()
 
         // then
         verify(exchangeRatePlanRepository).deleteNotAllowed(allowedCurrencyPairs)

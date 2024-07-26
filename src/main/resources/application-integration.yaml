@@ -8,3 +8,14 @@ server:
 spring:
   main:
     allow-bean-definition-overriding: true
+
+currency-exchange-plan-processor:
+  enabled: false
+
+currency-exchange-job-processor:
+  enabled: false
+
+nbp:
+  url: http://localhost:${wiremock.server.port}
+  connect-timeout: 1000ms
+  read-timeout: 1000ms

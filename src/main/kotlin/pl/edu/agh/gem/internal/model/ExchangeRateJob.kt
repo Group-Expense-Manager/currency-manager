@@ -13,7 +13,7 @@ data class ExchangeRateJob(
     val exchangeRate: BigDecimal? = null,
     val state: ExchangeRateJobState = STARTING,
     val forDate: Instant,
-    val nextProcessAt: Instant = Instant.now(),
+    val nextProcessAt: Instant,
     val retry: Long = 0,
 )
 

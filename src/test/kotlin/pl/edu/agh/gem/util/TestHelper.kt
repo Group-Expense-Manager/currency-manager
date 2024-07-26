@@ -1,24 +1,33 @@
 package pl.edu.agh.gem.util
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import pl.edu.agh.gem.external.dto.NBPExchangeRate
+import pl.edu.agh.gem.external.dto.NBPExchangeResponse
 import pl.edu.agh.gem.internal.job.ExchangeRateJobState
 import pl.edu.agh.gem.internal.job.ExchangeRateJobState.STARTING
 import pl.edu.agh.gem.internal.model.ExchangeRate
 import pl.edu.agh.gem.internal.model.ExchangeRateJob
+import pl.edu.agh.gem.internal.model.ExchangeRatePlan
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.Instant.parse
+import java.time.LocalDate
+
+fun objectMapper() =
+    jacksonObjectMapper().registerModules(JavaTimeModule())
 
 fun createExchangeRate(
     currencyFrom: String = "USD",
     currencyTo: String = "EUR",
-    rate: String = "1.0",
+    rate: BigDecimal = "1.0".toBigDecimal(),
     createdAt: Instant = parse("2023-01-01T00:00:00.00Z"),
     forDate: Instant = parse("2023-01-01T00:00:00.00Z"),
     validTo: Instant = parse("2023-01-02T00:00:00.00Z"),
 ) = ExchangeRate(
     currencyFrom = currencyFrom,
     currencyTo = currencyTo,
-    exchangeRate = rate.toBigDecimal(),
+    exchangeRate = rate,
     createdAt = createdAt,
     forDate = forDate,
     validTo = validTo,
@@ -42,4 +51,38 @@ fun createExchangeRateJob(
     forDate = forDate,
     nextProcessAt = nextProcessAt,
     retry = retry,
+)
+
+fun createExchangeRatePlan(
+    currencyFrom: String = "USD",
+    currencyTo: String = "EUR",
+    forDate: Instant = parse("2023-01-01T00:00:00.00Z"),
+    nextProcessAt: Instant = parse("2023-01-01T00:00:00.00Z"),
+) = ExchangeRatePlan(
+    currencyFrom = currencyFrom,
+    currencyTo = currencyTo,
+    forDate = forDate,
+    nextProcessAt = nextProcessAt,
+)
+
+fun createNBPExchangeResponse(
+    table: String = "A",
+    currency: String = "USD",
+    code: String = "USD",
+    rates: List<NBPExchangeRate> = listOf(createNBPExchangeRate()),
+) = NBPExchangeResponse(
+    table = table,
+    currency = currency,
+    code = code,
+    rates = rates,
+)
+
+fun createNBPExchangeRate(
+    no: String = "001/A/NBP/2024",
+    effectiveDate: LocalDate = LocalDate.parse("2024-01-01"),
+    mid: BigDecimal = "1.0".toBigDecimal(),
+) = NBPExchangeRate(
+    no = no,
+    effectiveDate = effectiveDate,
+    mid = mid,
 )

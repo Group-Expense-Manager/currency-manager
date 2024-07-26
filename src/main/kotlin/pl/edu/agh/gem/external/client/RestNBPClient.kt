@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod.GET
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
@@ -39,14 +40,16 @@ class RestNBPClient(
     private val clock: Clock,
 ) : NBPClient {
     override fun getPolishExchangeRate(currency: String, date: Instant): ExchangeRate {
-        return try {
-            val table = getTable(currency)
-            restTemplate.exchange(
+        val table = getTable(currency)
+        val result: ResponseEntity<NBPExchangeResponse>
+
+        try {
+            result = restTemplate.exchange(
                 resolveExchangeRateUrl(table, currency, getAdjustedDate(table, date)),
                 GET,
                 HttpEntity<Any>(HttpHeaders()),
-                NBPExchangeResponse::class.java,
-            ).body?.toExchangeRate(clock, exchangeRatesProperties.validDuration) ?: throw MissingBodyFromNBPException()
+                NBPExchangeResponse::class.java
+            )
         } catch (ex: HttpClientErrorException) {
             logger.warn(ex) { "Client side exception while trying to get exchange rate for $currency on date $date" }
             throw NBPClientException(ex.message)
@@ -57,6 +60,9 @@ class RestNBPClient(
             logger.warn(ex) { "Unexpected exception while trying to get exchange rate for $currency on date $date" }
             throw NBPClientException(ex.message)
         }
+
+        return result.body?.toExchangeRate(clock, exchangeRatesProperties.validDuration)
+            ?: throw MissingBodyFromNBPException()
     }
 
     private fun getTable(currency: String) =

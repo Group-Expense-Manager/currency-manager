@@ -1,23 +1,21 @@
 package pl.edu.agh.gem.internal.job
 
-import org.springframework.boot.ApplicationArguments
-import org.springframework.boot.ApplicationRunner
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Component
 import pl.edu.agh.gem.config.AvailableCurrenciesProperties
 import pl.edu.agh.gem.internal.model.ExchangeRatePlan
 import pl.edu.agh.gem.internal.persistence.ExchangeRatePlanRepository
 import java.time.Clock
 import java.time.Instant
-import java.time.LocalDate
 
 @Component
 class StartUpJob(
     private val availableCurrenciesProperties: AvailableCurrenciesProperties,
     private val exchangeRatePlanRepository: ExchangeRatePlanRepository,
     private val clock: Clock,
-) : ApplicationRunner {
+) : InitializingBean {
 
-    override fun run(arguments: ApplicationArguments?) {
+    override fun afterPropertiesSet() {
         val allowedCurrencyPairs = getAllPairsOfCurrencies()
         deleteAllNotAllowedPlans(allowedCurrencyPairs)
         insertAllAllowedPlans(allowedCurrencyPairs)
@@ -30,8 +28,8 @@ class StartUpJob(
                     ExchangeRatePlan(
                         currencyFrom = it.first,
                         currencyTo = it.second,
-                        forDate = LocalDate.now(clock).atStartOfDay(clock.zone).toInstant(),
-                        nextProcessAt = Instant.now(),
+                        forDate = Instant.now(clock),
+                        nextProcessAt = Instant.now(clock),
                     ),
                 )
             }
