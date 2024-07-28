@@ -17,6 +17,7 @@ import java.time.Instant
 )
 @ActiveProfiles("integration")
 abstract class BaseIntegrationSpec(body: ShouldSpec.() -> Unit) : ShouldSpec(body) {
+
     companion object {
         @JvmStatic
         @DynamicPropertySource

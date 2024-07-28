@@ -15,6 +15,7 @@ class ExchangeRateJobProcessor(
             is NextStage -> handleNextStage(nextState)
             is StageSuccess -> handleStateSuccess(exchangeRateJob)
             is StageFailure -> handleStateFailure(exchangeRateJob)
+                .also { log.error(nextState.exception) { "Failure occurred on ${exchangeRateJob.currencyFrom} -> ${exchangeRateJob.currencyTo}" } }
             is StageRetry -> handleStateRetry(exchangeRateJob)
         }
     }

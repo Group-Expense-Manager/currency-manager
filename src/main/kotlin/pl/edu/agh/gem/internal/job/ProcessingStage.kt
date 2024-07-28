@@ -15,8 +15,8 @@ abstract class ProcessingStage {
         return StageSuccess
     }
 
-    fun failure(): StageResult {
-        return StageFailure
+    fun failure(exception: Exception): StageResult {
+        return StageFailure(exception)
     }
 
     fun retry(): StageResult {
@@ -37,6 +37,8 @@ data class NextStage(
 
 data object StageSuccess : StageResult()
 
-data object StageFailure : StageResult()
+data class StageFailure(
+    val exception: Exception,
+) : StageResult()
 
 data object StageRetry : StageResult()

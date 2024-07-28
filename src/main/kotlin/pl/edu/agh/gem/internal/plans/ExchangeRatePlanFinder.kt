@@ -39,7 +39,7 @@ class ExchangeRatePlanFinder(
 
     private suspend fun waitOnEmpty(exchangeRatePlan: ExchangeRatePlan?) {
         if (exchangeRatePlan == null) {
-            log.debug("No exchange rate job to process. Waiting for new job")
+            log.info { "No exchange rate job to process. Waiting for new job" }
             delay(exchangeRatePlanProcessorProperties.emptyCandidateDelay)
         }
     }

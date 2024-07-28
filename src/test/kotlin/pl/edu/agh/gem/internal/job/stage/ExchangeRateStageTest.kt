@@ -1,6 +1,7 @@
 package pl.edu.agh.gem.internal.job.stage
 
 import io.kotest.core.spec.style.ShouldSpec
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
@@ -92,6 +93,6 @@ class ExchangeRateStageTest : ShouldSpec({
 
         // then
         verify(nBPClient).getPolishExchangeRate(exchangeRateJob.currencyFrom, exchangeRateJob.forDate)
-        verify(exchangeRateStage).failure()
+        verify(exchangeRateStage).failure(any())
     }
 },)

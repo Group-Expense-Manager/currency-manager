@@ -1,5 +1,6 @@
 package pl.edu.agh.gem.external.persistence.plan
 
+import mu.KotlinLogging
 import org.springframework.data.mongodb.core.FindAndModifyOptions
 import org.springframework.data.mongodb.core.MongoOperations
 import org.springframework.data.mongodb.core.query.Criteria
@@ -12,6 +13,7 @@ import pl.edu.agh.gem.internal.model.ExchangeRatePlan
 import pl.edu.agh.gem.internal.persistence.ExchangePlanNotFoundException
 import pl.edu.agh.gem.internal.persistence.ExchangeRatePlanRepository
 import java.time.Clock
+import java.time.Instant
 import java.time.LocalDate
 
 @Repository
@@ -29,10 +31,11 @@ class MongoExchangeRatePlansRepository(
         val options = FindAndModifyOptions().returnNew(false).upsert(false)
         val update = Update().set(ExchangeRatePlanEntity::nextProcessAt.name, clock.instant().plus(exchangeRatePlanProcessorProperties.lockTime))
         val query = Query.query(Criteria.where(ExchangeRatePlanEntity::nextProcessAt.name).lte(clock.instant()))
+        log.info { "Querying for exchange rate plan to process with clock: ${clock.instant()} ${Instant.now(clock)} $clock and query: $query" }
         return mongoOperations.findAndModify(query, update, options, ExchangeRatePlanEntity::class.java)?.toDomain()
     }
 
-    override fun delete(currencyTo: String, currencyFrom: String) {
+    override fun delete(currencyFrom: String, currencyTo: String) {
         val query = Query.query(Criteria.where(ExchangeRatePlanEntity::id.name).isEqualTo(CompositeKey(currencyFrom, currencyTo)))
         mongoOperations.remove(query, ExchangeRatePlanEntity::class.java)
     }
@@ -47,14 +50,14 @@ class MongoExchangeRatePlansRepository(
     }
 
     override fun setNextTime(exchangeRatePlan: ExchangeRatePlan): ExchangeRatePlan {
-        val options = FindAndModifyOptions().returnNew(false).upsert(false)
+        val options = FindAndModifyOptions().returnNew(true).upsert(false)
         val query = Query.query(
             Criteria.where(ExchangeRatePlanEntity::id.name).isEqualTo(CompositeKey(exchangeRatePlan.currencyFrom, exchangeRatePlan.currencyTo)),
         )
         val nextTimeDate = LocalDate.ofInstant(exchangeRatePlan.forDate, clock.zone)
-            .plus(exchangeRatePlanProcessorProperties.nextTimeFromMidnight)
             .atStartOfDay(clock.zone)
             .toInstant()
+            .plus(exchangeRatePlanProcessorProperties.nextTimeFromMidnight)
         val update = Update()
             .set(ExchangeRatePlanEntity::nextProcessAt.name, nextTimeDate)
             .set(ExchangeRatePlanEntity::forDate.name, nextTimeDate)
@@ -72,5 +75,8 @@ class MongoExchangeRatePlansRepository(
     override fun get(currencyFrom: String, currencyTo: String): ExchangeRatePlan? {
         val query = Query.query(Criteria.where(ExchangeRatePlanEntity::id.name).isEqualTo(CompositeKey(currencyFrom, currencyTo)))
         return mongoOperations.findOne(query, ExchangeRatePlanEntity::class.java)?.toDomain()
+    }
+    companion object {
+        private val log = KotlinLogging.logger {}
     }
 }

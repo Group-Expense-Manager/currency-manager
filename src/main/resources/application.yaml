@@ -22,9 +22,9 @@ available-currencies:
     - PLN
 
 currency-exchange-job-executor:
-  corePoolSize: 10
-  maxPoolSize: 10
-  queueCapacity: 10
+  corePoolSize: 2
+  maxPoolSize: 2
+  queueCapacity: 100
 
 currency-exchange-job-producer:
   corePoolSize: 1
@@ -34,7 +34,7 @@ currency-exchange-job-producer:
 currency-exchange-job-processor:
   enabled: true
   lockTime: 5m
-  emptyCandidateDelay: 1h
+  emptyCandidateDelay: 10s
   retryDelays:
     - 1m
     - 5m
@@ -46,9 +46,9 @@ currency-exchange-job-processor:
     - 24h
 
 currency-exchange-plan-executor:
-  corePoolSize: 10
-  maxPoolSize: 10
-  queueCapacity: 10
+  corePoolSize: 2
+  maxPoolSize: 2
+  queueCapacity: 100
 
 currency-exchange-plan-producer:
   corePoolSize: 1
@@ -58,7 +58,7 @@ currency-exchange-plan-producer:
 currency-exchange-plan-processor:
   enabled: true
   lockTime: 5m
-  emptyCandidateDelay: 1h
+  emptyCandidateDelay: 10s
   retryDelay: 10m
   nextTimeFromMidnight: 1d
 

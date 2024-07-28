@@ -19,7 +19,7 @@ class CurrencyExchangePlanConfig {
     @Bean(destroyMethod = "destroy")
     @ConditionalOnProperty(prefix = CURRENCY_EXCHANGE_PROCESSOR_PREFIX, name = ["enabled"], havingValue = "true")
     fun currencyExchangePlanConsumer(
-        consumerExecutor: Executor,
+        planConsumerExecutor: Executor,
         exchangeRatePlanFinder: ExchangeRatePlanFinder,
         exchangeRatePlanProcessor: ExchangeRatePlanProcessor,
     ): ExchangeRatePlanConsumer {
@@ -27,7 +27,7 @@ class CurrencyExchangePlanConfig {
             exchangeRatePlanFinder,
             exchangeRatePlanProcessor,
         )
-        exchangeRatePlanConsumer.consume(consumerExecutor)
+        exchangeRatePlanConsumer.consume(planConsumerExecutor)
         return exchangeRatePlanConsumer
     }
 

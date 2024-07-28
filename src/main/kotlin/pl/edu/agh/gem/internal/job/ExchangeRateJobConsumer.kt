@@ -18,8 +18,10 @@ class ExchangeRateJobConsumer(
     fun consume(consumerExecutor: Executor) {
         job = CoroutineScope(consumerExecutor.asCoroutineDispatcher()).launch {
             exchangeRateJobFinder.findJobToProcess()
-                .collect { exchangeRateJob ->
-                    processWithExceptionHandling(exchangeRateJob)
+                .collect {
+                    launch {
+                        processWithExceptionHandling(it)
+                    }
                 }
         }
     }

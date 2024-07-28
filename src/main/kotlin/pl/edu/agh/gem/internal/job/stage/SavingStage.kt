@@ -1,7 +1,6 @@
 package pl.edu.agh.gem.internal.job.stage
 
 import org.springframework.stereotype.Component
-import pl.edu.agh.gem.internal.job.ExchangeRateJobState.SUCCESS
 import pl.edu.agh.gem.internal.job.ProcessingStage
 import pl.edu.agh.gem.internal.job.StageResult
 import pl.edu.agh.gem.internal.model.ExchangeRate
@@ -25,7 +24,7 @@ class SavingStage(
                 forDate = exchangeRateJob.forDate,
             ),
         )
-        return nextStage(exchangeRateJob, SUCCESS)
+        return success()
     }
 }
 

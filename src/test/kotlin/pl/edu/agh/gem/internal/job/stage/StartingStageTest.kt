@@ -41,7 +41,7 @@ class StartingStageTest : ShouldSpec({
         // then
         verify(startingState).nextStage(
             exchangeRateJob,
-            POLISH_EXCHANGE_RATE,
+            REVERSE_POLISH_EXCHANGE_RATE,
         )
     }
 
@@ -58,7 +58,7 @@ class StartingStageTest : ShouldSpec({
         // then
         verify(startingState).nextStage(
             exchangeRateJob,
-            REVERSE_POLISH_EXCHANGE_RATE,
+            POLISH_EXCHANGE_RATE,
         )
     }
 },)

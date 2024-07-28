@@ -8,13 +8,13 @@ import com.fasterxml.jackson.module.kotlin.KotlinFeature.SingletonSupport
 import com.fasterxml.jackson.module.kotlin.KotlinFeature.StrictNullChecks
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import jakarta.annotation.PostConstruct
-import mu.KotlinLogging
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.i18n.SessionLocaleResolver
-import pl.edu.agh.gem.locale.LocaleTime.EUROPE_WARSAW
 import java.time.Clock
+import java.time.ZoneId
 import java.util.Locale.ENGLISH
 import java.util.TimeZone
 
@@ -43,10 +43,11 @@ class ApplicationConfig {
 
     @PostConstruct
     fun init() {
-        TimeZone.setDefault(TimeZone.getTimeZone(EUROPE_WARSAW))
+        TimeZone.setDefault(TimeZone.getTimeZone(ZoneId.of("UTC")))
     }
 
     @Bean
+    @Profile("!integration")
     fun clock(): Clock {
         return Clock.systemUTC()
     }

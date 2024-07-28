@@ -64,6 +64,9 @@ dependencyResolutionManagement {
             library("mockito", "org.mockito.kotlin:mockito-kotlin:5.2.1")
             library("archunit", "com.tngtech.archunit:archunit-junit5:1.2.1")
 
+            library("kotlinx-coroutines-test", "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0-RC")
+
+            library("kotest-clock", "io.kotest.extensions:kotest-extensions-clock:1.0.0")
             library("kotest-spring", "io.kotest.extensions:kotest-extensions-spring:1.1.3")
             library("kotest-wiremock", "io.kotest.extensions:kotest-extensions-wiremock:3.0.1")
             library("junit", "org.junit.jupiter:junit-jupiter-engine:5.10.2")
@@ -87,6 +90,7 @@ dependencyResolutionManagement {
                     "kotest-spring",
                     "kotest-wiremock",
                     "kotest-testcontainers",
+                    "kotest-clock",
 
                 ),
             )

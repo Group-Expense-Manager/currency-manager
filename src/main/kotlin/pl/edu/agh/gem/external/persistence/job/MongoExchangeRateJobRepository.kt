@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.findAndModify
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
+import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.stereotype.Repository
 import pl.edu.agh.gem.config.ExchangeRateJobProcessorProperties
 import pl.edu.agh.gem.internal.model.ExchangeRateJob
@@ -32,16 +33,23 @@ class MongoExchangeRateJobRepository(
     }
 
     override fun updateNextProcessAtAndRetry(exchangeRateJob: ExchangeRateJob): ExchangeRateJob {
-        val query = Query.query(Criteria.where(ExchangeRateJobEntity::id.name).`is`(exchangeRateJob))
-        val update = Update().set(ExchangeRateJobEntity::nextProcessAt.name, clock.instant().plus(getDelay(exchangeRateJob.retry)))
+        val query = Query.query(Criteria.where(ExchangeRateJobEntity::id.name).isEqualTo(exchangeRateJob.id))
+        val update = Update()
+            .set(ExchangeRateJobEntity::nextProcessAt.name, clock.instant().plus(getDelay(exchangeRateJob.retry)))
+            .set(ExchangeRateJobEntity::retry.name, exchangeRateJob.retry + 1)
         val options = FindAndModifyOptions.options().returnNew(true).upsert(false)
+        mongoOperations.findAll(ExchangeRateJobEntity::class.java).forEach { println(it) }
         return mongoOperations.findAndModify(query, update, options, ExchangeRateJobEntity::class.java)?.toDomain()
-            ?: throw MissingExchangeRateJobException()
+            ?: throw MissingExchangeRateJobException(exchangeRateJob)
     }
 
     override fun remove(exchangeRateJob: ExchangeRateJob) {
-        val query = Query.query(Criteria.where(ExchangeRateJobEntity::id.name).`is`(exchangeRateJob.id))
+        val query = Query.query(Criteria.where(ExchangeRateJobEntity::id.name).isEqualTo(exchangeRateJob.id))
         mongoOperations.remove(query, ExchangeRateJobEntity::class.java)
+    }
+
+    override fun findById(id: String): ExchangeRateJob? {
+        return mongoOperations.findById(id, ExchangeRateJobEntity::class.java)?.toDomain()
     }
 
     private fun getDelay(retry: Long): Duration {

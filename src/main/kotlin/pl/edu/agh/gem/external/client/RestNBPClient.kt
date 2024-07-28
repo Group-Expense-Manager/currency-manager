@@ -48,7 +48,7 @@ class RestNBPClient(
                 resolveExchangeRateUrl(table, currency, getAdjustedDate(table, date)),
                 GET,
                 HttpEntity<Any>(HttpHeaders()),
-                NBPExchangeResponse::class.java
+                NBPExchangeResponse::class.java,
             )
         } catch (ex: HttpClientErrorException) {
             logger.warn(ex) { "Client side exception while trying to get exchange rate for $currency on date $date" }

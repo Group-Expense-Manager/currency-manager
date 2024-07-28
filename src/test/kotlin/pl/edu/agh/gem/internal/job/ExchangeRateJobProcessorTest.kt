@@ -56,7 +56,7 @@ class ExchangeRateJobProcessorTest : ShouldSpec({
         // given
         val exchangeRateJob = createExchangeRateJob()
         val stateProcessor = mock<ProcessingStage> {
-            on { process(exchangeRateJob) } doReturn StageFailure
+            on { process(exchangeRateJob) } doReturn StageFailure(Exception())
         }
         whenever(currencyExchangeJobSelector.select(any())).thenReturn(stateProcessor)
 

@@ -9,13 +9,41 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
-currency-exchange-plan-processor:
-  enabled: false
-
-currency-exchange-job-processor:
-  enabled: false
-
 nbp:
   url: http://localhost:${wiremock.server.port}
   connect-timeout: 1000ms
   read-timeout: 1000ms
+
+currency-exchange-job-executor:
+  corePoolSize: 2
+  maxPoolSize: 2
+  queueCapacity: 10
+
+currency-exchange-job-producer:
+  corePoolSize: 1
+  maxPoolSize: 1
+  queueCapacity: 1
+
+currency-exchange-job-processor:
+  enabled: true
+  lockTime: 0s
+  emptyCandidateDelay: 2s
+  retryDelays:
+    - 0s
+
+currency-exchange-plan-executor:
+  corePoolSize: 2
+  maxPoolSize: 2
+  queueCapacity: 10
+
+currency-exchange-plan-producer:
+  corePoolSize: 1
+  maxPoolSize: 1
+  queueCapacity: 1
+
+currency-exchange-plan-processor:
+  enabled: true
+  lockTime: 0s
+  emptyCandidateDelay: 2s
+  retryDelay: 0s
+  nextTimeFromMidnight: 1d

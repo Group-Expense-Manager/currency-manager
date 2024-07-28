@@ -14,12 +14,13 @@ import pl.edu.agh.gem.external.dto.toInternalExchangeRateResponse
 import pl.edu.agh.gem.internal.service.CurrencyService
 import pl.edu.agh.gem.media.InternalApiMediaType.APPLICATION_JSON_INTERNAL_VER_1
 import pl.edu.agh.gem.paths.Paths.INTERNAL
+import java.time.Clock
 import java.time.Instant
-import java.time.Instant.now
 
 @RestController
 @RequestMapping("$INTERNAL/currencies")
 class InternalCurrencyController(
+    private val clock: Clock,
     private val currencyService: CurrencyService,
 ) {
 
@@ -36,6 +37,6 @@ class InternalCurrencyController(
         @PathVariable currencyTo: String,
         @RequestParam date: Instant?,
     ): InternalExchangeRateResponse {
-        return currencyService.getExchangeRate(currencyFrom, currencyTo, date ?: now()).toInternalExchangeRateResponse()
+        return currencyService.getExchangeRate(currencyFrom, currencyTo, date ?: clock.instant()).toInternalExchangeRateResponse()
     }
 }

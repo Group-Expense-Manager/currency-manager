@@ -3,8 +3,6 @@ package pl.edu.agh.gem.integration.controler
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import org.mockito.kotlin.whenever
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.OK
 import pl.edu.agh.gem.assertion.shouldBody
@@ -17,16 +15,12 @@ import pl.edu.agh.gem.integration.ability.ServiceTestClient
 import pl.edu.agh.gem.internal.persistence.ExchangeRateRepository
 import pl.edu.agh.gem.internal.persistence.MissingExchangeRateException
 import pl.edu.agh.gem.util.createExchangeRate
-import java.time.Clock
 import java.time.temporal.ChronoUnit.DAYS
 
 class ExternalCurrencyControllerIT(
     private val service: ServiceTestClient,
     private val exchangeRateRepository: ExchangeRateRepository,
-    @SpyBean private val clock: Clock,
 ) : BaseIntegrationSpec({
-
-    whenever(clock.instant()).thenReturn(FIXED_TIME)
 
     should("get available currencies successfully") {
         // when

@@ -14,7 +14,7 @@ data class ExchangeRateJobEntity(
     val exchangeRate: BigDecimal?,
     val state: ExchangeRateJobState,
     val forDate: Instant,
-    val nextProcessAt: Instant = Instant.now(),
+    val nextProcessAt: Instant,
     val retry: Long = 0,
 )
 

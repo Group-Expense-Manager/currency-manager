@@ -104,6 +104,8 @@ dependencies {
     testImplementation(testlibs.bundles.testcontainers)
     testImplementation(testlibs.mockito)
     testImplementation(testlibs.archunit)
+    implementation(testlibs.kotlinx.coroutines.test)
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly(testlibs.junit)
 

@@ -12,8 +12,8 @@ import pl.edu.agh.gem.internal.model.ExchangeRateJob
 class StartingStage : ProcessingStage() {
     override fun process(exchangeRateJob: ExchangeRateJob): StageResult {
         return when {
-            exchangeRateJob.currencyFrom == "PLN" -> nextStage(exchangeRateJob, POLISH_EXCHANGE_RATE)
-            exchangeRateJob.currencyTo == "PLN" -> nextStage(exchangeRateJob, REVERSE_POLISH_EXCHANGE_RATE)
+            exchangeRateJob.currencyFrom == "PLN" -> nextStage(exchangeRateJob, REVERSE_POLISH_EXCHANGE_RATE)
+            exchangeRateJob.currencyTo == "PLN" -> nextStage(exchangeRateJob, POLISH_EXCHANGE_RATE)
             else -> nextStage(exchangeRateJob, EXCHANGE_RATE)
         }
     }

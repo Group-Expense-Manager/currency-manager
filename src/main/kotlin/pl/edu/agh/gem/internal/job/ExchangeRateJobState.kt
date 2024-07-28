@@ -6,6 +6,5 @@ enum class ExchangeRateJobState {
     POLISH_EXCHANGE_RATE,
     REVERSE_POLISH_EXCHANGE_RATE,
     SAVING,
-    SUCCESS,
     ERROR,
 }
