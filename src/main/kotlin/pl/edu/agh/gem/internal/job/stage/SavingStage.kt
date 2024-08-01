@@ -14,6 +14,7 @@ class SavingStage(
     private val clock: Clock,
 ) : ProcessingStage() {
     override fun process(exchangeRateJob: ExchangeRateJob): StageResult {
+        logger.info { "Saving exchange rate for ${exchangeRateJob.currencyFrom} -> ${exchangeRateJob.currencyTo} on ${exchangeRateJob.forDate}" }
         exchangeRateRepository.save(
             ExchangeRate(
                 currencyFrom = exchangeRateJob.currencyFrom,

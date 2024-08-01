@@ -12,10 +12,11 @@ import java.math.BigDecimal.ONE
 import java.math.MathContext.DECIMAL128
 
 @Component
-class ReverseExchangeRateStage(
+class ReversePolishExchangeRateStage(
     private val nBPClient: NBPClient,
 ) : ProcessingStage() {
     override fun process(exchangeRateJob: ExchangeRateJob): StageResult {
+        logger.info { "Getting exchange rate for PLN -> ${exchangeRateJob.currencyTo} on ${exchangeRateJob.forDate}" }
         return try {
             val exchangeRateToCurrency = nBPClient.getPolishExchangeRate(
                 exchangeRateJob.currencyTo,

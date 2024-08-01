@@ -9,7 +9,7 @@ import pl.edu.agh.gem.internal.job.ExchangeRateJobState.STARTING
 import pl.edu.agh.gem.internal.job.stage.ErrorStage
 import pl.edu.agh.gem.internal.job.stage.ExchangeRateStage
 import pl.edu.agh.gem.internal.job.stage.PolishExchangeRateStage
-import pl.edu.agh.gem.internal.job.stage.ReverseExchangeRateStage
+import pl.edu.agh.gem.internal.job.stage.ReversePolishExchangeRateStage
 import pl.edu.agh.gem.internal.job.stage.SavingStage
 import pl.edu.agh.gem.internal.job.stage.StartingStage
 
@@ -18,7 +18,7 @@ class CurrencyExchangeJobSelector(
     private val startingStage: StartingStage,
     private val exchangeRateStage: ExchangeRateStage,
     private val polishExchangeRateStage: PolishExchangeRateStage,
-    private val reversePolishExchangeRateStage: ReverseExchangeRateStage,
+    private val reversePolishExchangeRateStage: ReversePolishExchangeRateStage,
     private val savingStage: SavingStage,
     private val errorStage: ErrorStage,
 ) {

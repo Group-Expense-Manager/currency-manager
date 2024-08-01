@@ -5,7 +5,7 @@ import pl.edu.agh.gem.config.AvailableCurrenciesProperties
 import pl.edu.agh.gem.internal.model.Currency
 import pl.edu.agh.gem.internal.model.ExchangeRate
 import pl.edu.agh.gem.internal.persistence.ExchangeRateRepository
-import java.time.Instant
+import java.time.LocalDate
 
 @Service
 class CurrencyService(
@@ -16,7 +16,7 @@ class CurrencyService(
         return availableCurrenciesProperties.codes.map { Currency(it) }
     }
 
-    fun getExchangeRate(currencyFrom: String, currencyTo: String, date: Instant): ExchangeRate {
+    fun getExchangeRate(currencyFrom: String, currencyTo: String, date: LocalDate): ExchangeRate {
         return exchangeRateRepository.getExchangeRate(currencyFrom, currencyTo, date)
     }
 }

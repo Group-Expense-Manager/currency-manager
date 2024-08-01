@@ -37,7 +37,7 @@ class ExchangeRateJobIT(
         val exchangeRateJob = createExchangeRateJob(
             currencyFrom = firstExchangeRateResponse.code,
             currencyTo = secondExchangeRateResponse.code,
-            forDate = FIXED_TIME,
+            forDate = localDate,
             nextProcessAt = FIXED_TIME,
         )
         stubNBPExchangeRate(firstExchangeRateResponse, firstExchangeRateResponse.table, firstExchangeRateResponse.code, localDate)
@@ -47,18 +47,19 @@ class ExchangeRateJobIT(
         exchangeRateJobRepository.save(exchangeRateJob)
 
         // then
-        waitTillJobEnd(exchangeRateJobRepository, exchangeRateJob.id)
-        val exchangeRate = exchangeRateRepository.getExchangeRate(firstExchangeRateResponse.code, secondExchangeRateResponse.code, FIXED_TIME)
+        waitTillExchangePlan(exchangeRateJobRepository, exchangeRateJob.id)
+        val exchangeRate = exchangeRateRepository.getExchangeRate(firstExchangeRateResponse.code, secondExchangeRateResponse.code, localDate)
         exchangeRate.exchangeRate shouldBe firstExchangeRateResponse.rates.first().mid.divide(secondExchangeRateResponse.rates.first().mid)
         exchangeRate.currencyTo shouldBe secondExchangeRateResponse.code
         exchangeRate.currencyFrom shouldBe firstExchangeRateResponse.code
-        exchangeRate.forDate shouldBe FIXED_TIME
-        exchangeRate.validTo shouldNotBeBefore FIXED_TIME
+        exchangeRate.forDate shouldBe localDate
+        exchangeRate.validTo shouldNotBeBefore localDate
         exchangeRate.createdAt.shouldNotBeNull()
     }
 
     should("fail exchange rate job successfully") {
         // given
+        val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
         val firstExchangeRateResponse = createNBPExchangeResponse(
             code = "USD",
         )
@@ -68,7 +69,7 @@ class ExchangeRateJobIT(
         val exchangeRateJob = createExchangeRateJob(
             currencyFrom = firstExchangeRateResponse.code,
             currencyTo = secondExchangeRateResponse.code,
-            forDate = FIXED_TIME,
+            forDate = localDate,
             nextProcessAt = FIXED_TIME,
         )
 
@@ -76,10 +77,10 @@ class ExchangeRateJobIT(
         exchangeRateJobRepository.save(exchangeRateJob)
 
         // then
-        waitTillJobEnd(exchangeRateJobRepository, exchangeRateJob.id)
+        waitTillExchangePlan(exchangeRateJobRepository, exchangeRateJob.id)
         shouldThrow<MissingExchangeRateException> {
             exchangeRateRepository
-                .getExchangeRate(firstExchangeRateResponse.code, secondExchangeRateResponse.code, FIXED_TIME)
+                .getExchangeRate(firstExchangeRateResponse.code, secondExchangeRateResponse.code, localDate)
         }
     }
 
@@ -96,7 +97,7 @@ class ExchangeRateJobIT(
         val exchangeRateJob = createExchangeRateJob(
             currencyFrom = firstExchangeRateResponse.code,
             currencyTo = secondExchangeRateResponse.code,
-            forDate = FIXED_TIME,
+            forDate = localDate,
             nextProcessAt = FIXED_TIME,
         )
         stubNBPExchangeRate(
@@ -120,7 +121,7 @@ class ExchangeRateJobIT(
         // then
         waitTillJobEndRetry(exchangeRateJobRepository, exchangeRateJob.id)
         shouldThrow<MissingExchangeRateException> {
-            exchangeRateRepository.getExchangeRate(firstExchangeRateResponse.code, secondExchangeRateResponse.code, FIXED_TIME)
+            exchangeRateRepository.getExchangeRate(firstExchangeRateResponse.code, secondExchangeRateResponse.code, localDate)
         }
 
         // when
@@ -128,31 +129,36 @@ class ExchangeRateJobIT(
         stubNBPExchangeRate(secondExchangeRateResponse, secondExchangeRateResponse.table, secondExchangeRateResponse.code, localDate)
 
         // then
-        waitTillJobEnd(exchangeRateJobRepository, exchangeRateJob.id)
+        waitTillExchangePlan(exchangeRateJobRepository, exchangeRateJob.id)
         val exchangeRateAfterRetry = exchangeRateRepository.getExchangeRate(
             firstExchangeRateResponse.code,
             secondExchangeRateResponse.code,
-            FIXED_TIME,
+            localDate,
         )
         exchangeRateAfterRetry.exchangeRate shouldBe firstExchangeRateResponse.rates.first().mid.divide(secondExchangeRateResponse.rates.first().mid)
         exchangeRateAfterRetry.currencyTo shouldBe secondExchangeRateResponse.code
         exchangeRateAfterRetry.currencyFrom shouldBe firstExchangeRateResponse.code
-        exchangeRateAfterRetry.forDate shouldBe FIXED_TIME
-        exchangeRateAfterRetry.validTo shouldNotBeBefore FIXED_TIME
+        exchangeRateAfterRetry.forDate shouldBe localDate
+        exchangeRateAfterRetry.validTo shouldNotBeBefore localDate
         exchangeRateAfterRetry.createdAt.shouldNotBeNull()
     }
 },)
 
-private suspend fun waitTillJobEnd(exchangeRateJobRepository: ExchangeRateJobRepository, exchangeRateJobId: String) {
-    while (exchangeRateJobRepository.findById(exchangeRateJobId) != null) {
-        println("Waiting for job to end ${exchangeRateJobRepository.findById(exchangeRateJobId)}")
+private suspend fun waitTillExchangePlan(exchangeRateJobRepository: ExchangeRateJobRepository, exchangeRateJobId: String) {
+    while (true) {
         delay(1L.seconds.toJavaDuration())
+        if (exchangeRateJobRepository.findById(exchangeRateJobId) == null) {
+            break
+        }
     }
 }
 
 private suspend fun waitTillJobEndRetry(exchangeRateJobRepository: ExchangeRateJobRepository, exchangeRateJobId: String) {
-    while (exchangeRateJobRepository.findById(exchangeRateJobId).run { this != null && this.retry == 0L }) {
-        println("Waiting for job to end retry ${exchangeRateJobRepository.findById(exchangeRateJobId)}")
+    while (true) {
         delay(1L.seconds.toJavaDuration())
+        val exchangeRateJob = exchangeRateJobRepository.findById(exchangeRateJobId)
+        if (exchangeRateJob != null && exchangeRateJob.retry != 0L) {
+            break
+        }
     }
 }

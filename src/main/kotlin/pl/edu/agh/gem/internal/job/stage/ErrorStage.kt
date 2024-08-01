@@ -10,6 +10,7 @@ import pl.edu.agh.gem.internal.model.ExchangeRateJob
 @Component
 class ErrorStage : ProcessingStage() {
     override fun process(exchangeRateJob: ExchangeRateJob): StageResult {
+        logger.warn { "Error state reached for $exchangeRateJob" }
         return StageFailure(ErrorStateException(exchangeRateJob.state))
     }
 }

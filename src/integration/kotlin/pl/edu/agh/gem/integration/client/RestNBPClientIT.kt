@@ -40,17 +40,17 @@ class RestNBPClientIT(
         stubNBPExchangeRate(exchangeRateResponse, exchangeRateResponse.table, exchangeRateResponse.code, localDate)
 
         // when
-        val result = nBPClient.getPolishExchangeRate(exchangeRateResponse.code, date)
+        val result = nBPClient.getPolishExchangeRate(exchangeRateResponse.code, localDate)
 
         // then
-        result.forDate shouldBe date
+        result.forDate shouldBe localDate
         result.currencyFrom shouldBe exchangeRateResponse.code
         result.exchangeRate shouldBe exchangeRateResponse.rates.first().mid
     }
 
     should("get exchange rate for table B currency") {
         // given
-        val date = FIXED_WENSDAY
+        val date = FIXED_WEDNESDAY
         val localDate = LocalDate.ofInstant(date, clock.zone)
         val exchangeRateResponse = createNBPExchangeResponse(
             table = "B",
@@ -67,10 +67,10 @@ class RestNBPClientIT(
         stubNBPExchangeRate(exchangeRateResponse, exchangeRateResponse.table, exchangeRateResponse.code, localDate)
 
         // when
-        val result = nBPClient.getPolishExchangeRate(exchangeRateResponse.code, date)
+        val result = nBPClient.getPolishExchangeRate(exchangeRateResponse.code, localDate)
 
         // then
-        result.forDate shouldBe date
+        result.forDate shouldBe localDate
         result.currencyFrom shouldBe exchangeRateResponse.code
         result.exchangeRate shouldBe exchangeRateResponse.rates.first().mid
     }
@@ -79,10 +79,11 @@ class RestNBPClientIT(
         // given
         val invalidCurrency = "INVALID"
         val date = FIXED_TIME
+        val localDate = LocalDate.ofInstant(date, clock.zone)
 
         // when & then
         shouldThrow<IncorrectCurrencyException> {
-            nBPClient.getPolishExchangeRate(invalidCurrency, date)
+            nBPClient.getPolishExchangeRate(invalidCurrency, localDate)
         }
     }
 
@@ -95,7 +96,7 @@ class RestNBPClientIT(
 
         // when & then
         shouldThrow<NBPClientException> {
-            nBPClient.getPolishExchangeRate(currency, date)
+            nBPClient.getPolishExchangeRate(currency, localDate)
         }
     }
 
@@ -108,7 +109,7 @@ class RestNBPClientIT(
 
         // when & then
         shouldThrow<RetryableNBPClientException> {
-            nBPClient.getPolishExchangeRate(currency, date)
+            nBPClient.getPolishExchangeRate(currency, localDate)
         }
     }
 
@@ -121,7 +122,7 @@ class RestNBPClientIT(
 
         // when & then
         shouldThrow<MissingBodyFromNBPException> {
-            nBPClient.getPolishExchangeRate(currency, date)
+            nBPClient.getPolishExchangeRate(currency, localDate)
         }
     }
 },)

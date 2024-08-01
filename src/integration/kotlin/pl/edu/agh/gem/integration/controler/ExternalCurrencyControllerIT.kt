@@ -15,11 +15,14 @@ import pl.edu.agh.gem.integration.ability.ServiceTestClient
 import pl.edu.agh.gem.internal.persistence.ExchangeRateRepository
 import pl.edu.agh.gem.internal.persistence.MissingExchangeRateException
 import pl.edu.agh.gem.util.createExchangeRate
+import java.time.Clock
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 
 class ExternalCurrencyControllerIT(
     private val service: ServiceTestClient,
     private val exchangeRateRepository: ExchangeRateRepository,
+    private val clock: Clock,
 ) : BaseIntegrationSpec({
 
     should("get available currencies successfully") {
@@ -35,13 +38,14 @@ class ExternalCurrencyControllerIT(
 
     should("get exchange rate successfully") {
         // given
+        val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
         val exchangeRate = createExchangeRate(
             currencyTo = "PLN",
             currencyFrom = "USD",
             rate = "3.75".toBigDecimal(),
-            forDate = FIXED_TIME,
+            forDate = localDate,
             createdAt = FIXED_TIME,
-            validTo = FIXED_TIME.plus(1, DAYS),
+            validTo = localDate.plus(1, DAYS),
         )
         exchangeRateRepository.save(exchangeRate)
 
@@ -65,13 +69,14 @@ class ExternalCurrencyControllerIT(
 
     should("get exchange rate successfully when date is null") {
         // given
+        val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
         val exchangeRate = createExchangeRate(
             currencyTo = "PLN",
             currencyFrom = "USD",
             rate = "3.75".toBigDecimal(),
-            forDate = FIXED_TIME,
+            forDate = localDate,
             createdAt = FIXED_TIME,
-            validTo = FIXED_TIME.plus(1, DAYS),
+            validTo = localDate.plus(1, DAYS),
         )
         exchangeRateRepository.save(exchangeRate)
 
@@ -95,13 +100,14 @@ class ExternalCurrencyControllerIT(
 
     should("response with NOT_FOUND when exchange rate not found") {
         // when
+        val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
         val exchangeRate = createExchangeRate(
             currencyTo = "PLN",
             currencyFrom = "USD",
             rate = "3.75".toBigDecimal(),
-            forDate = FIXED_TIME,
+            forDate = localDate,
             createdAt = FIXED_TIME,
-            validTo = FIXED_TIME.plus(1, DAYS),
+            validTo = localDate.plus(1, DAYS),
         )
         val response = service.getExternalExchangeRate(
             currencyTo = exchangeRate.currencyTo,

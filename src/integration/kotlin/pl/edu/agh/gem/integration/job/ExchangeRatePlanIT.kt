@@ -14,7 +14,6 @@ import pl.edu.agh.gem.internal.persistence.ExchangeRateRepository
 import pl.edu.agh.gem.util.createExchangeRatePlan
 import pl.edu.agh.gem.util.createNBPExchangeResponse
 import java.time.Clock
-import java.time.Instant
 import java.time.LocalDate
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
@@ -39,7 +38,7 @@ class ExchangeRatePlanIT(
             val exchangeRateJob = createExchangeRatePlan(
                 currencyFrom = firstExchangeRateResponse.code,
                 currencyTo = secondExchangeRateResponse.code,
-                forDate = FIXED_TIME,
+                forDate = localDate,
                 nextProcessAt = FIXED_TIME,
             )
             stubNBPExchangeRate(
@@ -59,36 +58,48 @@ class ExchangeRatePlanIT(
             exchangeRatePlanRepository.insert(exchangeRateJob)
 
             // then
-            waitTillJobEnd(exchangeRatePlanRepository, firstExchangeRateResponse.code, secondExchangeRateResponse.code, FIXED_TIME)
-            waitTillJobEnd(mongoClient)
+            waitTillExchangePlan(exchangeRatePlanRepository, firstExchangeRateResponse.code, secondExchangeRateResponse.code, localDate)
+            waitTillExchangePlan(mongoClient)
             val exchangeRate = exchangeRateRepository.getExchangeRate(
                 firstExchangeRateResponse.code,
                 secondExchangeRateResponse.code,
-                FIXED_TIME,
+                localDate,
             )
             exchangeRate.exchangeRate shouldBe firstExchangeRateResponse.rates.first().mid.divide(secondExchangeRateResponse.rates.first().mid)
             exchangeRate.currencyTo shouldBe secondExchangeRateResponse.code
             exchangeRate.currencyFrom shouldBe firstExchangeRateResponse.code
-            exchangeRate.forDate shouldBe FIXED_TIME
-            exchangeRate.validTo shouldNotBeBefore FIXED_TIME
+            exchangeRate.forDate shouldBe localDate
+            exchangeRate.validTo shouldNotBeBefore localDate
             exchangeRate.createdAt.shouldNotBeNull()
             val exchangeRatePlan = exchangeRatePlanRepository.get(firstExchangeRateResponse.code, secondExchangeRateResponse.code)
             exchangeRatePlan.shouldNotBeNull()
             exchangeRatePlan.currencyFrom shouldBe firstExchangeRateResponse.code
             exchangeRatePlan.currencyTo shouldBe secondExchangeRateResponse.code
-            exchangeRatePlan.forDate shouldBe FIXED_TIME.plus(exchangeRatePlanProcessorProperties.nextTimeFromMidnight)
+            exchangeRatePlan.forDate shouldBe localDate.plusDays(exchangeRatePlanProcessorProperties.nextTimeFromMidnight.toDays())
         }
     },
 )
 
-private suspend fun waitTillJobEnd(exchangeRatePlanRepository: ExchangeRatePlanRepository, currencyFrom: String, currencyTo: String, date: Instant) {
-    while (exchangeRatePlanRepository.get(currencyFrom, currencyTo)?.forDate?.isAfter(date) != true) {
+private suspend fun waitTillExchangePlan(
+    exchangeRatePlanRepository: ExchangeRatePlanRepository,
+    currencyFrom: String,
+    currencyTo: String,
+    date: LocalDate,
+) {
+    while (true) {
         delay(1L.seconds.toJavaDuration())
+        val exchangeRatePlan = exchangeRatePlanRepository.get(currencyFrom, currencyTo)
+        if (exchangeRatePlan != null && exchangeRatePlan.forDate.isAfter(date)) {
+            break
+        }
     }
 }
 
-private suspend fun waitTillJobEnd(mongoClient: MongoClient) {
-    while (mongoClient.getDatabase(DATABASE_NAME).getCollection("Jobs").countDocuments() > 0) {
+private suspend fun waitTillExchangePlan(mongoClient: MongoClient) {
+    while (true) {
         delay(1L.seconds.toJavaDuration())
+        if (mongoClient.getDatabase(DATABASE_NAME).getCollection("Jobs").countDocuments() == 0L) {
+            break
+        }
     }
 }

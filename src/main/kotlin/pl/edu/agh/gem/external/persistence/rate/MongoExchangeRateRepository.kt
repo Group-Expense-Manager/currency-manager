@@ -9,7 +9,7 @@ import pl.edu.agh.gem.internal.model.ExchangeRate
 import pl.edu.agh.gem.internal.persistence.ExchangeRateRepository
 import pl.edu.agh.gem.internal.persistence.MissingExchangeRateException
 import java.time.Clock
-import java.time.Instant
+import java.time.LocalDate
 
 @Repository
 class MongoExchangeRateRepository(
@@ -17,21 +17,21 @@ class MongoExchangeRateRepository(
     private val clock: Clock,
 ) : ExchangeRateRepository {
     override fun save(exchangeRate: ExchangeRate): ExchangeRate {
-        return mongoOperations.save(exchangeRate.toEntity()).toDomain()
+        return mongoOperations.save(exchangeRate.toEntity(clock)).toDomain(clock)
     }
 
-    override fun getExchangeRate(currencyFrom: String, currencyTo: String, date: Instant): ExchangeRate {
+    override fun getExchangeRate(currencyFrom: String, currencyTo: String, date: LocalDate): ExchangeRate {
         val query = Query.query(
             Criteria.where(ExchangeRateEntity::currencyFrom.name)
                 .isEqualTo(currencyFrom)
                 .and(ExchangeRateEntity::currencyTo.name)
                 .isEqualTo(currencyTo)
                 .and(ExchangeRateEntity::forDate.name)
-                .lte(date)
+                .lte(date.atStartOfDay(clock.zone).toInstant())
                 .and(ExchangeRateEntity::validTo.name)
-                .gte(clock.instant()),
+                .gte(date.atStartOfDay(clock.zone).toInstant()),
         )
-        return mongoOperations.findOne(query, ExchangeRateEntity::class.java)?.toDomain()
+        return mongoOperations.findOne(query, ExchangeRateEntity::class.java)?.toDomain(clock)
             ?: throw MissingExchangeRateException(currencyTo, currencyFrom, date)
     }
 }

@@ -15,9 +15,9 @@ nbp:
   read-timeout: 1000ms
 
 currency-exchange-job-executor:
-  corePoolSize: 2
-  maxPoolSize: 2
-  queueCapacity: 10
+  corePoolSize: 1
+  maxPoolSize: 1
+  queueCapacity: 3
 
 currency-exchange-job-producer:
   corePoolSize: 1
@@ -32,9 +32,9 @@ currency-exchange-job-processor:
     - 0s
 
 currency-exchange-plan-executor:
-  corePoolSize: 2
-  maxPoolSize: 2
-  queueCapacity: 10
+  corePoolSize: 1
+  maxPoolSize: 1
+  queueCapacity: 3
 
 currency-exchange-plan-producer:
   corePoolSize: 1

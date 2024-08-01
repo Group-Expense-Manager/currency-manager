@@ -45,13 +45,13 @@ class CurrencyExchangePlanConfig {
     @Bean
     fun planConsumerExecutor(
         executorFactory: ExecutorFactory,
-        settings: CurrencyExchangeJobExecutorProperties,
+        settings: CurrencyExchangePlanExecutorProperties,
     ): Executor {
         val config = ExecutorConfig(
             corePoolSize = settings.corePoolSize,
             maxPoolSize = settings.maxPoolSize,
             taskQueueSize = settings.queueCapacity,
-            threadPoolName = CONSUMER_POOL,
+            threadPoolName = CONSUMER_POOL
         )
         return executorFactory.createExecutor(config)
     }
@@ -59,13 +59,13 @@ class CurrencyExchangePlanConfig {
     @Bean
     fun planProducerExecutor(
         executorFactory: ExecutorFactory,
-        settings: CurrencyExchangeJobProducerProperties,
+        settings: CurrencyExchangePlanProducerProperties,
     ): Executor {
         val config = ExecutorConfig(
             corePoolSize = settings.corePoolSize,
             maxPoolSize = settings.maxPoolSize,
             taskQueueSize = settings.queueCapacity,
-            threadPoolName = PRODUCER_POOL,
+            threadPoolName = PRODUCER_POOL
         )
         return executorFactory.createExecutor(config)
     }

@@ -18,7 +18,7 @@ import java.math.MathContext.DECIMAL128
 
 class ReverseExchangeRateStageTest : ShouldSpec({
     val nBPClient = mock<NBPClient>()
-    val reverseExchangeRateStage = spy(ReverseExchangeRateStage(nBPClient))
+    val reversePolishExchangeRateStage = spy(ReversePolishExchangeRateStage(nBPClient))
 
     should("successfully process exchange rates") {
         // given
@@ -33,13 +33,13 @@ class ReverseExchangeRateStageTest : ShouldSpec({
             .thenReturn(exchangeRateTo)
 
         // when
-        reverseExchangeRateStage.process(exchangeRateJob)
+        reversePolishExchangeRateStage.process(exchangeRateJob)
 
         // then
         val expectedExchangeRate = ONE.divide(exchangeRateTo.exchangeRate, DECIMAL128)
         val expectedJob = exchangeRateJob.addExchangeRate(expectedExchangeRate)
         verify(nBPClient).getPolishExchangeRate(exchangeRateJob.currencyTo, exchangeRateJob.forDate)
-        verify(reverseExchangeRateStage).nextStage(
+        verify(reversePolishExchangeRateStage).nextStage(
             expectedJob,
             SAVING,
         )
@@ -53,10 +53,10 @@ class ReverseExchangeRateStageTest : ShouldSpec({
             .thenThrow(RetryableNBPClientException("Retryable exception"))
 
         // when
-        reverseExchangeRateStage.process(exchangeRateJob)
+        reversePolishExchangeRateStage.process(exchangeRateJob)
 
         // then
-        verify(reverseExchangeRateStage).retry()
+        verify(reversePolishExchangeRateStage).retry()
     }
 
     should("fail on NBPClientException") {
@@ -67,9 +67,9 @@ class ReverseExchangeRateStageTest : ShouldSpec({
             .thenThrow(NBPClientException("Exception"))
 
         // when
-        reverseExchangeRateStage.process(exchangeRateJob)
+        reversePolishExchangeRateStage.process(exchangeRateJob)
 
         // then
-        verify(reverseExchangeRateStage).failure(any())
+        verify(reversePolishExchangeRateStage).failure(any())
     }
 },)

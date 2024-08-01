@@ -24,6 +24,6 @@ fun NBPExchangeResponse.toExchangeRate(clock: Clock, validDuration: Duration) = 
     currencyTo = "PLN",
     exchangeRate = rates.first().mid,
     createdAt = clock.instant(),
-    forDate = rates.first().effectiveDate.atStartOfDay(clock.zone).toInstant(),
-    validTo = rates.first().effectiveDate.atStartOfDay(clock.zone).plus(validDuration).toInstant(),
+    forDate = rates.first().effectiveDate,
+    validTo = rates.first().effectiveDate.plusDays(validDuration.toDays()),
 )

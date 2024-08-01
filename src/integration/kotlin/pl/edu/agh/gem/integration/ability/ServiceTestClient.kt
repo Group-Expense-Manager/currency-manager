@@ -9,7 +9,7 @@ import pl.edu.agh.gem.headers.HeadersUtils.withAppAcceptType
 import pl.edu.agh.gem.paths.Paths.EXTERNAL
 import pl.edu.agh.gem.paths.Paths.INTERNAL
 import java.net.URI
-import java.time.Instant
+import java.time.LocalDate
 
 @Component
 @Lazy
@@ -32,21 +32,21 @@ class ServiceTestClient(applicationContext: WebApplicationContext) {
             .exchange()
     }
 
-    fun getInternalExchangeRate(currencyFrom: String, currencyTo: String, date: Instant?): ResponseSpec {
+    fun getInternalExchangeRate(currencyFrom: String, currencyTo: String, date: LocalDate?): ResponseSpec {
         return webClient.get()
             .uri(getExchangeRateUri(EXTERNAL, currencyFrom, currencyTo, date))
             .headers { it.withAppAcceptType() }
             .exchange()
     }
 
-    fun getExternalExchangeRate(currencyFrom: String, currencyTo: String, date: Instant?): ResponseSpec {
+    fun getExternalExchangeRate(currencyFrom: String, currencyTo: String, date: LocalDate?): ResponseSpec {
         return webClient.get()
             .uri(getExchangeRateUri(INTERNAL, currencyFrom, currencyTo, date))
             .headers { it.withAppAcceptType() }
             .exchange()
     }
 
-    private fun getExchangeRateUri(type: String, currencyFrom: String, currencyTo: String, date: Instant?): URI {
+    private fun getExchangeRateUri(type: String, currencyFrom: String, currencyTo: String, date: LocalDate?): URI {
         return date?.let {
             URI("$type/currencies/from/$currencyFrom/to/$currencyTo/?date=$date")
         } ?: URI("$type/currencies/from/$currencyFrom/to/$currencyTo/")

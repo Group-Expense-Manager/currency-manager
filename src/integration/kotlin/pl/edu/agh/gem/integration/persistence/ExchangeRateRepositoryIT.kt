@@ -8,6 +8,7 @@ import pl.edu.agh.gem.internal.persistence.ExchangeRateRepository
 import pl.edu.agh.gem.internal.persistence.MissingExchangeRateException
 import pl.edu.agh.gem.util.createExchangeRate
 import java.time.Clock
+import java.time.LocalDate
 
 class ExchangeRateRepositoryIT(
     @SpyBean private val clock: Clock,
@@ -16,13 +17,14 @@ class ExchangeRateRepositoryIT(
 
     should("save and find exchange rate by currency pair and date") {
         // given
-        val exchangeRate = createExchangeRate(currencyFrom = "USD", currencyTo = "PLN", forDate = FIXED_TIME)
+        val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
+        val exchangeRate = createExchangeRate(currencyFrom = "USD", currencyTo = "PLN", forDate = localDate)
 
         // when
         exchangeRateRepository.save(exchangeRate)
 
         // then
-        val foundRate = exchangeRateRepository.getExchangeRate("USD", "PLN", FIXED_TIME)
+        val foundRate = exchangeRateRepository.getExchangeRate("USD", "PLN", localDate)
 
         // then
         foundRate shouldBe exchangeRate
@@ -32,19 +34,20 @@ class ExchangeRateRepositoryIT(
         // given
         val currencyFrom = "USD"
         val currencyTo = "PLN"
-        val date = FIXED_TIME
+        val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
 
         // when & then
         shouldThrow<MissingExchangeRateException> {
-            exchangeRateRepository.getExchangeRate(currencyFrom, currencyTo, date)
+            exchangeRateRepository.getExchangeRate(currencyFrom, currencyTo, localDate)
         }
     }
 
     should("return null when trying to find exchange rate with non-matching date") {
         // given
-        val exchangeRate = createExchangeRate(currencyFrom = "USD", currencyTo = "PLN", forDate = FIXED_TIME)
+        val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
+        val exchangeRate = createExchangeRate(currencyFrom = "USD", currencyTo = "PLN", forDate = localDate)
         exchangeRateRepository.save(exchangeRate)
-        val nonMatchingDate = FIXED_TIME.minusSeconds(3600)
+        val nonMatchingDate = localDate.minusDays(10)
 
         // when & then
         shouldThrow<MissingExchangeRateException> {
@@ -54,16 +57,17 @@ class ExchangeRateRepositoryIT(
 
     should("find exchange rate within valid date range") {
         // given
+        val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
         val exchangeRate = createExchangeRate(
             currencyFrom = "USD",
             currencyTo = "PLN",
-            forDate = FIXED_TIME.minusSeconds(3600),
-            validTo = FIXED_TIME.plusSeconds(3600),
+            forDate = localDate.minusDays(10),
+            validTo = localDate.plusDays(10),
         )
         exchangeRateRepository.save(exchangeRate)
 
         // when
-        val foundRate = exchangeRateRepository.getExchangeRate("USD", "PLN", FIXED_TIME)
+        val foundRate = exchangeRateRepository.getExchangeRate("USD", "PLN", localDate)
 
         // then
         foundRate shouldBe exchangeRate

@@ -11,7 +11,6 @@ import pl.edu.agh.gem.internal.model.ExchangeRateJob
 import pl.edu.agh.gem.internal.model.ExchangeRatePlan
 import java.math.BigDecimal
 import java.time.Instant
-import java.time.Instant.parse
 import java.time.LocalDate
 
 fun objectMapper() =
@@ -21,9 +20,9 @@ fun createExchangeRate(
     currencyFrom: String = "USD",
     currencyTo: String = "EUR",
     rate: BigDecimal = "1.0".toBigDecimal(),
-    createdAt: Instant = parse("2023-01-01T00:00:00.00Z"),
-    forDate: Instant = parse("2023-01-01T00:00:00.00Z"),
-    validTo: Instant = parse("2023-01-02T00:00:00.00Z"),
+    createdAt: Instant = Instant.parse("2023-01-01T00:00:00.00Z"),
+    forDate: LocalDate = LocalDate.parse("2023-01-01"),
+    validTo: LocalDate = LocalDate.parse("2023-01-01"),
 ) = ExchangeRate(
     currencyFrom = currencyFrom,
     currencyTo = currencyTo,
@@ -39,8 +38,8 @@ fun createExchangeRateJob(
     currencyTo: String = "EUR",
     rate: BigDecimal? = null,
     state: ExchangeRateJobState = STARTING,
-    forDate: Instant = parse("2023-01-01T00:00:00.00Z"),
-    nextProcessAt: Instant = parse("2023-01-01T00:00:00.00Z"),
+    forDate: LocalDate = LocalDate.parse("2023-01-01"),
+    nextProcessAt: Instant = Instant.parse("2023-01-01T00:00:00.00Z"),
     retry: Long = 0,
 ) = ExchangeRateJob(
     id = id,
@@ -56,8 +55,8 @@ fun createExchangeRateJob(
 fun createExchangeRatePlan(
     currencyFrom: String = "USD",
     currencyTo: String = "EUR",
-    forDate: Instant = parse("2023-01-01T00:00:00.00Z"),
-    nextProcessAt: Instant = parse("2023-01-01T00:00:00.00Z"),
+    forDate: LocalDate = LocalDate.parse("2023-01-01"),
+    nextProcessAt: Instant = Instant.parse("2023-01-01T00:00:00.00Z"),
 ) = ExchangeRatePlan(
     currencyFrom = currencyFrom,
     currencyTo = currencyTo,

@@ -4,7 +4,8 @@ import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.shouldBe
 import pl.edu.agh.gem.internal.model.ExchangeRate
 import java.math.BigDecimal
-import java.time.Instant.parse
+import java.time.Instant
+import java.time.LocalDate
 
 class ExternalExchangeRateResponseTest : ShouldSpec({
 
@@ -14,9 +15,9 @@ class ExternalExchangeRateResponseTest : ShouldSpec({
             currencyFrom = "USD",
             currencyTo = "EUR",
             exchangeRate = BigDecimal("1.2"),
-            createdAt = parse("2023-01-01T00:00:00.00Z"),
-            forDate = parse("2023-01-01T00:00:00.00Z"),
-            validTo = parse("2023-01-01T00:00:00.00Z"),
+            createdAt = Instant.parse("2023-01-01T00:00:00.00Z"),
+            forDate = LocalDate.parse("2023-01-01"),
+            validTo = LocalDate.parse("2023-01-01"),
         )
 
         // when

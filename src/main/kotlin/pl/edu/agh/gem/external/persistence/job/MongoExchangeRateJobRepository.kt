@@ -22,14 +22,16 @@ class MongoExchangeRateJobRepository(
     private val clock: Clock,
 ) : ExchangeRateJobRepository {
     override fun save(exchangeRateJob: ExchangeRateJob): ExchangeRateJob {
-        return mongoOperations.save(exchangeRateJob.toEntity()).toDomain()
+        return mongoOperations.save(exchangeRateJob.toEntity(clock)).toDomain(clock)
     }
 
     override fun findJobToProcessAndLock(): ExchangeRateJob? {
+        println(clock.instant())
         val query = Query.query(Criteria.where(ExchangeRateJobEntity::nextProcessAt.name).lte(clock.instant()))
-        val update = Update().set(ExchangeRateJobEntity::nextProcessAt.name, clock.instant().plus(exchangeRateJobProcessorProperties.lockTime))
+        val update = Update()
+            .set(ExchangeRateJobEntity::nextProcessAt.name, clock.instant().plus(exchangeRateJobProcessorProperties.lockTime))
         val options = FindAndModifyOptions.options().returnNew(false).upsert(false)
-        return mongoOperations.findAndModify(query, update, options, ExchangeRateJobEntity::class.java)?.toDomain()
+        return mongoOperations.findAndModify(query, update, options, ExchangeRateJobEntity::class.java)?.toDomain(clock)
     }
 
     override fun updateNextProcessAtAndRetry(exchangeRateJob: ExchangeRateJob): ExchangeRateJob {
@@ -39,7 +41,7 @@ class MongoExchangeRateJobRepository(
             .set(ExchangeRateJobEntity::retry.name, exchangeRateJob.retry + 1)
         val options = FindAndModifyOptions.options().returnNew(true).upsert(false)
         mongoOperations.findAll(ExchangeRateJobEntity::class.java).forEach { println(it) }
-        return mongoOperations.findAndModify(query, update, options, ExchangeRateJobEntity::class.java)?.toDomain()
+        return mongoOperations.findAndModify(query, update, options, ExchangeRateJobEntity::class.java)?.toDomain(clock)
             ?: throw MissingExchangeRateJobException(exchangeRateJob)
     }
 
@@ -49,7 +51,7 @@ class MongoExchangeRateJobRepository(
     }
 
     override fun findById(id: String): ExchangeRateJob? {
-        return mongoOperations.findById(id, ExchangeRateJobEntity::class.java)?.toDomain()
+        return mongoOperations.findById(id, ExchangeRateJobEntity::class.java)?.toDomain(clock)
     }
 
     private fun getDelay(retry: Long): Duration {

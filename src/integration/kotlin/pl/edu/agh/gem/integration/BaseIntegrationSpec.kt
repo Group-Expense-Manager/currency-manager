@@ -27,7 +27,7 @@ abstract class BaseIntegrationSpec(body: ShouldSpec.() -> Unit) : ShouldSpec(bod
         }
 
         val FIXED_TIME = Instant.parse("2021-01-01T00:00:00Z")
-        val FIXED_WENSDAY = Instant.parse("2021-01-06T00:00:00Z")
+        val FIXED_WEDNESDAY = Instant.parse("2021-01-06T00:00:00Z")
         private val logger = KotlinLogging.logger {}
     }
 }

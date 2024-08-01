@@ -33,8 +33,8 @@ currency-exchange-job-producer:
 
 currency-exchange-job-processor:
   enabled: true
-  lockTime: 5m
-  emptyCandidateDelay: 10s
+  lockTime: PT1.5M
+  emptyCandidateDelay: PT1.5S
   retryDelays:
     - 1m
     - 5m

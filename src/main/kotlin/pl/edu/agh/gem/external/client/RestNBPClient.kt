@@ -27,7 +27,6 @@ import java.time.Clock
 import java.time.DayOfWeek.SATURDAY
 import java.time.DayOfWeek.SUNDAY
 import java.time.DayOfWeek.WEDNESDAY
-import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 import java.time.temporal.TemporalAdjusters.previousOrSame
@@ -39,7 +38,7 @@ class RestNBPClient(
     private val exchangeRatesProperties: ExchangeRatesProperties,
     private val clock: Clock,
 ) : NBPClient {
-    override fun getPolishExchangeRate(currency: String, date: Instant): ExchangeRate {
+    override fun getPolishExchangeRate(currency: String, date: LocalDate): ExchangeRate {
         val table = getTable(currency)
         val result: ResponseEntity<NBPExchangeResponse>
 
@@ -68,11 +67,10 @@ class RestNBPClient(
     private fun getTable(currency: String) =
         nBPProperties.table.filterValues { it.currencies.contains(currency) }.keys.firstOrNull() ?: throw IncorrectCurrencyException(currency)
 
-    private fun getAdjustedDate(table: ExchangeRateTable, date: Instant): LocalDate {
-        val dateInLocalDate = LocalDate.ofInstant(date, clock.zone)
+    private fun getAdjustedDate(table: ExchangeRateTable, date: LocalDate): LocalDate {
         return when (table) {
-            A -> adjustToWeekday(dateInLocalDate)
-            B -> adjustToLastWednesday(dateInLocalDate)
+            A -> adjustToWeekday(date)
+            B -> adjustToLastWednesday(date)
         }
     }
 

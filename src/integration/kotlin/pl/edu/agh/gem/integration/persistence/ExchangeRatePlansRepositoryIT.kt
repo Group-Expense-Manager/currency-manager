@@ -21,7 +21,8 @@ class ExchangeRatePlansRepositoryIT(
 
     should("insert and get exchange rate plan by currency pair") {
         // given
-        val exchangeRatePlan = createExchangeRatePlan(currencyFrom = "USD", currencyTo = "PLN", forDate = FIXED_TIME)
+        val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
+        val exchangeRatePlan = createExchangeRatePlan(currencyFrom = "USD", currencyTo = "PLN", forDate = localDate)
 
         // when
         val savedPlan = mongoExchangeRatePlansRepository.insert(exchangeRatePlan)
@@ -82,10 +83,11 @@ class ExchangeRatePlansRepositoryIT(
 
     should("set next processing time for exchange rate plan") {
         // given
+        val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
         val exchangeRatePlan = createExchangeRatePlan(
             currencyFrom = "USD",
             currencyTo = "PLN",
-            forDate = FIXED_TIME,
+            forDate = localDate,
             nextProcessAt = FIXED_TIME,
         )
         mongoExchangeRatePlansRepository.insert(exchangeRatePlan)
@@ -100,7 +102,7 @@ class ExchangeRatePlansRepositoryIT(
         // then
         updatedPlan.shouldNotBeNull()
         updatedPlan.nextProcessAt shouldBe nextTimeDate
-        updatedPlan.forDate shouldBe nextTimeDate
+        updatedPlan.forDate shouldBe LocalDate.ofInstant(nextTimeDate, clock.zone)
     }
 
     should("delete exchange rate plans that are not allowed") {
@@ -122,7 +124,8 @@ class ExchangeRatePlansRepositoryIT(
 
     should("throw ExchangePlanNotFoundException when setting next processing time for a non-existing plan") {
         // given
-        val nonExistingPlan = createExchangeRatePlan(currencyFrom = "USD", currencyTo = "PLN", forDate = FIXED_TIME)
+        val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
+        val nonExistingPlan = createExchangeRatePlan(currencyFrom = "USD", currencyTo = "PLN", forDate = localDate)
 
         // when & then
         shouldThrow<ExchangePlanNotFoundException> {

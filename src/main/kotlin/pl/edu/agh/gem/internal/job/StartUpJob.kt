@@ -6,6 +6,7 @@ import pl.edu.agh.gem.config.AvailableCurrenciesProperties
 import pl.edu.agh.gem.internal.model.ExchangeRatePlan
 import pl.edu.agh.gem.internal.persistence.ExchangeRatePlanRepository
 import java.time.Clock
+import java.time.LocalDate
 
 @Component
 class StartUpJob(
@@ -27,7 +28,7 @@ class StartUpJob(
                     ExchangeRatePlan(
                         currencyFrom = it.first,
                         currencyTo = it.second,
-                        forDate = clock.instant(),
+                        forDate = LocalDate.now(clock),
                         nextProcessAt = clock.instant(),
                     ),
                 )

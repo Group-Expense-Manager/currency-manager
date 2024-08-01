@@ -14,6 +14,7 @@ class PolishExchangeRateStage(
     private val nBPClient: NBPClient,
 ) : ProcessingStage() {
     override fun process(exchangeRateJob: ExchangeRateJob): StageResult {
+        logger.info { "Getting exchange rate for ${exchangeRateJob.currencyFrom} -> PLN on ${exchangeRateJob.forDate}" }
         return try {
             val exchangeRateFromCurrency = nBPClient.getPolishExchangeRate(
                 exchangeRateJob.currencyFrom,

@@ -5,9 +5,11 @@ import org.springframework.data.mongodb.core.index.IndexDirection.ASCENDING
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 import pl.edu.agh.gem.internal.model.ExchangeRatePlan
+import java.time.Clock
 import java.time.Instant
+import java.time.LocalDate
 
-@Document("Plans")
+@Document("plans")
 data class ExchangeRatePlanEntity(
     @Id
     val id: CompositeKey,
@@ -21,19 +23,19 @@ data class CompositeKey(
     val currencyTo: String,
 )
 
-fun ExchangeRatePlanEntity.toDomain(): ExchangeRatePlan {
+fun ExchangeRatePlanEntity.toDomain(clock: Clock): ExchangeRatePlan {
     return ExchangeRatePlan(
         currencyFrom = id.currencyFrom,
         currencyTo = id.currencyTo,
         nextProcessAt = nextProcessAt,
-        forDate = forDate,
+        forDate = LocalDate.ofInstant(forDate, clock.zone),
     )
 }
 
-fun ExchangeRatePlan.toEntity(): ExchangeRatePlanEntity {
+fun ExchangeRatePlan.toEntity(clock: Clock): ExchangeRatePlanEntity {
     return ExchangeRatePlanEntity(
         id = CompositeKey(currencyFrom, currencyTo),
         nextProcessAt = nextProcessAt,
-        forDate = forDate,
+        forDate = forDate.atStartOfDay(clock.zone).toInstant(),
     )
 }
