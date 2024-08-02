@@ -28,7 +28,7 @@ class ExchangeRatePlanIT(
     private val exchangeRatePlanProcessorProperties: ExchangeRatePlanProcessorProperties,
 ) : BaseIntegrationSpec(
     {
-        should("process exchange plan job successfully") { 
+        should("process exchange plan job successfully") {
             // given
             val startedTime = testClock.instant()
             whenever(clock.instant()).thenAnswer { FIXED_TIME.plusSeconds(elapsedSeconds(startedTime)) }
