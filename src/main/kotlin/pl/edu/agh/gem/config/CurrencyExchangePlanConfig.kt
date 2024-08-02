@@ -51,7 +51,7 @@ class CurrencyExchangePlanConfig {
             corePoolSize = settings.corePoolSize,
             maxPoolSize = settings.maxPoolSize,
             taskQueueSize = settings.queueCapacity,
-            threadPoolName = CONSUMER_POOL
+            threadPoolName = CONSUMER_POOL,
         )
         return executorFactory.createExecutor(config)
     }
@@ -65,7 +65,7 @@ class CurrencyExchangePlanConfig {
             corePoolSize = settings.corePoolSize,
             maxPoolSize = settings.maxPoolSize,
             taskQueueSize = settings.queueCapacity,
-            threadPoolName = PRODUCER_POOL
+            threadPoolName = PRODUCER_POOL,
         )
         return executorFactory.createExecutor(config)
     }

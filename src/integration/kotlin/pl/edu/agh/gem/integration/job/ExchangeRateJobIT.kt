@@ -5,6 +5,8 @@ import io.kotest.matchers.date.shouldNotBeBefore
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.time.delay
+import org.mockito.kotlin.whenever
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import pl.edu.agh.gem.integration.BaseIntegrationSpec
 import pl.edu.agh.gem.integration.ability.stubNBPExchangeRate
@@ -19,13 +21,15 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
 class ExchangeRateJobIT(
-    private val clock: Clock,
+    @SpyBean private val clock: Clock,
     private val exchangeRateJobRepository: ExchangeRateJobRepository,
     private val exchangeRateRepository: ExchangeRateRepository,
 ) : BaseIntegrationSpec({
 
     should("process exchange rate job successfully") {
         // given
+        val startedTime = testClock.instant()
+        whenever(clock.instant()).thenAnswer { FIXED_TIME.plusSeconds(elapsedSeconds(startedTime)) }
         val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
 
         val firstExchangeRateResponse = createNBPExchangeResponse(
@@ -59,6 +63,8 @@ class ExchangeRateJobIT(
 
     should("fail exchange rate job successfully") {
         // given
+        val startedTime = testClock.instant()
+        whenever(clock.instant()).thenAnswer { FIXED_TIME.plusSeconds(elapsedSeconds(startedTime)) }
         val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
         val firstExchangeRateResponse = createNBPExchangeResponse(
             code = "USD",
@@ -86,6 +92,8 @@ class ExchangeRateJobIT(
 
     should("retry exchange rate job successfully") {
         // given
+        val startedTime = testClock.instant()
+        whenever(clock.instant()).thenAnswer { FIXED_TIME.plusSeconds(elapsedSeconds(startedTime)) }
         val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
 
         val firstExchangeRateResponse = createNBPExchangeResponse(

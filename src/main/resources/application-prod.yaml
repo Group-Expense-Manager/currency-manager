@@ -1,4 +1,9 @@
-data:
-  mongodb:
-    uri: mongodb + srv ://<username>:<pwd>@<cluster>.mongodb.net/<dbname>
+spring:
+  data:
+    mongodb:
+      uri: ${CURRENCY_MANAGER_DB_URI}
 
+nbp:
+  url: https://api.nbp.pl
+  connect-timeout: 1000ms
+  read-timeout: 1000ms

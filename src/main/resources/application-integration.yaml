@@ -26,8 +26,8 @@ currency-exchange-job-producer:
 
 currency-exchange-job-processor:
   enabled: true
-  lockTime: 0s
-  emptyCandidateDelay: 2s
+  lockTime: 10s
+  emptyCandidateDelay: 10s
   retryDelays:
     - 0s
 
@@ -43,7 +43,7 @@ currency-exchange-plan-producer:
 
 currency-exchange-plan-processor:
   enabled: true
-  lockTime: 0s
-  emptyCandidateDelay: 2s
+  lockTime: 10s
+  emptyCandidateDelay: 10s
   retryDelay: 0s
   nextTimeFromMidnight: 1d

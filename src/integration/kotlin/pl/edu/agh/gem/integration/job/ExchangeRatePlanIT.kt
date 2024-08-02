@@ -5,6 +5,8 @@ import io.kotest.matchers.date.shouldNotBeBefore
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.time.delay
+import org.mockito.kotlin.whenever
+import org.springframework.boot.test.mock.mockito.SpyBean
 import pl.edu.agh.gem.config.ExchangeRatePlanProcessorProperties
 import pl.edu.agh.gem.integration.BaseIntegrationSpec
 import pl.edu.agh.gem.integration.ability.stubNBPExchangeRate
@@ -19,14 +21,17 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
 class ExchangeRatePlanIT(
-    private val clock: Clock,
+    @SpyBean private val clock: Clock,
     private val exchangeRatePlanRepository: ExchangeRatePlanRepository,
     private val exchangeRateRepository: ExchangeRateRepository,
     private val mongoClient: MongoClient,
     private val exchangeRatePlanProcessorProperties: ExchangeRatePlanProcessorProperties,
 ) : BaseIntegrationSpec(
     {
-        should("process exchange plan job successfully") { // given
+        should("process exchange plan job successfully") { 
+            // given
+            val startedTime = testClock.instant()
+            whenever(clock.instant()).thenAnswer { FIXED_TIME.plusSeconds(elapsedSeconds(startedTime)) }
             val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
 
             val firstExchangeRateResponse = createNBPExchangeResponse(
@@ -98,7 +103,7 @@ private suspend fun waitTillExchangePlan(
 private suspend fun waitTillExchangePlan(mongoClient: MongoClient) {
     while (true) {
         delay(1L.seconds.toJavaDuration())
-        if (mongoClient.getDatabase(DATABASE_NAME).getCollection("Jobs").countDocuments() == 0L) {
+        if (mongoClient.getDatabase(DATABASE_NAME).getCollection("jobs").countDocuments() == 0L) {
             break
         }
     }

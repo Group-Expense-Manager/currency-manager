@@ -26,7 +26,6 @@ class MongoExchangeRateJobRepository(
     }
 
     override fun findJobToProcessAndLock(): ExchangeRateJob? {
-        println(clock.instant())
         val query = Query.query(Criteria.where(ExchangeRateJobEntity::nextProcessAt.name).lte(clock.instant()))
         val update = Update()
             .set(ExchangeRateJobEntity::nextProcessAt.name, clock.instant().plus(exchangeRateJobProcessorProperties.lockTime))
@@ -40,7 +39,7 @@ class MongoExchangeRateJobRepository(
             .set(ExchangeRateJobEntity::nextProcessAt.name, clock.instant().plus(getDelay(exchangeRateJob.retry)))
             .set(ExchangeRateJobEntity::retry.name, exchangeRateJob.retry + 1)
         val options = FindAndModifyOptions.options().returnNew(true).upsert(false)
-        mongoOperations.findAll(ExchangeRateJobEntity::class.java).forEach { println(it) }
+        mongoOperations.findAll(ExchangeRateJobEntity::class.java)
         return mongoOperations.findAndModify(query, update, options, ExchangeRateJobEntity::class.java)?.toDomain(clock)
             ?: throw MissingExchangeRateJobException(exchangeRateJob)
     }
