@@ -33,7 +33,8 @@ dependencyResolutionManagement {
 
             library("guava", "com.google.guava:guava:33.1.0-jre")
             library("kotlinlogging", "io.github.microutils:kotlin-logging:3.0.5")
-            library("lib-gem", "pl.edu.agh.gem:lib-gem:0.2.1")
+            library("kotlinx-coroutines", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
+            library("lib-gem", "pl.edu.agh.gem:lib-gem:0.2.2-beta")
 
             version("resilience4j", "2.2.0")
             library("resilience4j-kotlin", "io.github.resilience4j", "resilience4j-kotlin").versionRef("resilience4j")
@@ -63,6 +64,9 @@ dependencyResolutionManagement {
             library("mockito", "org.mockito.kotlin:mockito-kotlin:5.2.1")
             library("archunit", "com.tngtech.archunit:archunit-junit5:1.2.1")
 
+            library("kotlinx-coroutines-test", "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0-RC")
+
+            library("kotest-clock", "io.kotest.extensions:kotest-extensions-clock:1.0.0")
             library("kotest-spring", "io.kotest.extensions:kotest-extensions-spring:1.1.3")
             library("kotest-wiremock", "io.kotest.extensions:kotest-extensions-wiremock:3.0.1")
             library("junit", "org.junit.jupiter:junit-jupiter-engine:5.10.2")
@@ -86,6 +90,7 @@ dependencyResolutionManagement {
                     "kotest-spring",
                     "kotest-wiremock",
                     "kotest-testcontainers",
+                    "kotest-clock",
 
                 ),
             )

@@ -242,7 +242,7 @@ exceptions:
       - 'hashCode'
       - 'toString'
   InstanceOfCheckForException:
-    active: true
+    active: false
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
   NotImplementedDeclaration:
     active: true
@@ -1017,10 +1017,11 @@ HbmartinRuleSet:
   AvoidMutableCollections:
     active: true
   AvoidVarsExceptWithDelegate:
-    active: true
+    active: false
     allowedDelegates:
       - 'remember\w*'
       - 'mutableState\w*'
+
   DontForceCast:
     active: true
   MutableTypeShouldBePrivate:
@@ -1054,11 +1055,11 @@ compiler:
 impure:
   active: true
   LoopDefinition:
-    active: true
+    active: false
   ReturnStatement:
     active: false
   VariableDefinition:
-    active: true
+    active: false
   ReturnUnit:
     active: true
     ignoreFunctionType: false

@@ -1,10 +1,7 @@
 package pl.edu.agh.gem.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.context.annotation.Configuration
-
-@Configuration
-class CurrencyConfig
+import java.time.Duration
 
 @ConfigurationProperties(prefix = "available-currencies")
 data class AvailableCurrenciesProperties(
@@ -13,11 +10,5 @@ data class AvailableCurrenciesProperties(
 
 @ConfigurationProperties(prefix = "exchange-rates")
 data class ExchangeRatesProperties(
-    val rates: List<StaticExchangeRate>,
-)
-
-data class StaticExchangeRate(
-    val baseCurrency: String,
-    val targetCurrency: String,
-    val rate: String,
+    val validDuration: Duration,
 )

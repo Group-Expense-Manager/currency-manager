@@ -85,6 +85,7 @@ dependencies {
     implementation(tools.bundles.kotlin)
     implementation("com.fasterxml.jackson.module:jackson-module-afterburner")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
@@ -94,6 +95,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     implementation(libs.kotlinlogging)
+    implementation(libs.kotlinx.coroutines)
     implementation(libs.lib.gem)
     implementation(libs.bundles.resilience4j)
 
@@ -102,6 +104,8 @@ dependencies {
     testImplementation(testlibs.bundles.testcontainers)
     testImplementation(testlibs.mockito)
     testImplementation(testlibs.archunit)
+    implementation(testlibs.kotlinx.coroutines.test)
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly(testlibs.junit)
 

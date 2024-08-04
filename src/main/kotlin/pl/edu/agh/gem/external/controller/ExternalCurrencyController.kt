@@ -14,12 +14,13 @@ import pl.edu.agh.gem.external.dto.toExternalExchangeRateResponse
 import pl.edu.agh.gem.internal.service.CurrencyService
 import pl.edu.agh.gem.media.InternalApiMediaType.APPLICATION_JSON_INTERNAL_VER_1
 import pl.edu.agh.gem.paths.Paths.EXTERNAL
-import java.time.Instant
-import java.time.Instant.now
+import java.time.Clock
+import java.time.LocalDate
 
 @RestController
 @RequestMapping("$EXTERNAL/currencies")
 class ExternalCurrencyController(
+    private val clock: Clock,
     private val currencyService: CurrencyService,
 ) {
 
@@ -34,8 +35,8 @@ class ExternalCurrencyController(
     fun getExchangeRates(
         @PathVariable currencyFrom: String,
         @PathVariable currencyTo: String,
-        @RequestParam date: Instant?,
+        @RequestParam date: LocalDate?,
     ): ExternalExchangeRateResponse {
-        return currencyService.getExchangeRate(currencyFrom, currencyTo, date ?: now()).toExternalExchangeRateResponse()
+        return currencyService.getExchangeRate(currencyFrom, currencyTo, date ?: LocalDate.now(clock)).toExternalExchangeRateResponse()
     }
 }
