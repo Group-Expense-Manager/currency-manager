@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.i18n.SessionLocaleResolver
 import java.time.Clock
-import java.time.ZoneId
+import java.time.ZoneOffset.UTC
 import java.util.Locale.ENGLISH
 import java.util.TimeZone
 
@@ -43,7 +43,7 @@ class ApplicationConfig {
 
     @PostConstruct
     fun init() {
-        TimeZone.setDefault(TimeZone.getTimeZone(ZoneId.of("UTC")))
+        TimeZone.setDefault(TimeZone.getTimeZone(UTC))
     }
 
     @Bean

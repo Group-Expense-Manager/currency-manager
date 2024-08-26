@@ -2,10 +2,10 @@ package pl.edu.agh.gem.config
 
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.client.RestTemplate
+import pl.edu.agh.gem.helper.http.GemRestTemplateFactory
 import pl.edu.agh.gem.internal.client.ExchangeRateTable
 import java.time.Duration
 
@@ -13,10 +13,14 @@ import java.time.Duration
 class ClientConfig {
     @Bean
     @Qualifier("NBPRestTemplate")
-    fun attachmentStoreRestTemplate(attachmentStoreProperties: NBPProperties): RestTemplate {
-        return RestTemplateBuilder()
-            .setConnectTimeout(attachmentStoreProperties.connectTimeout)
-            .setReadTimeout(attachmentStoreProperties.readTimeout)
+    fun attachmentStoreRestTemplate(
+        nBPProperties: NBPProperties,
+        gemRestTemplateFactory: GemRestTemplateFactory,
+    ): RestTemplate {
+        return gemRestTemplateFactory
+            .builder()
+            .withReadTimeout(nBPProperties.readTimeout)
+            .withConnectTimeout(nBPProperties.connectTimeout)
             .build()
     }
 }
