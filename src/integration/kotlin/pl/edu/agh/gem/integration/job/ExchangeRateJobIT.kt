@@ -1,6 +1,7 @@
 package pl.edu.agh.gem.integration.job
 
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.date.shouldBeAfter
 import io.kotest.matchers.date.shouldNotBeBefore
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -57,7 +58,7 @@ class ExchangeRateJobIT(
         exchangeRate.currencyTo shouldBe secondExchangeRateResponse.code
         exchangeRate.currencyFrom shouldBe firstExchangeRateResponse.code
         exchangeRate.forDate shouldBe localDate
-        exchangeRate.validTo shouldNotBeBefore localDate
+        exchangeRate.validTo shouldBeAfter localDate
         exchangeRate.createdAt.shouldNotBeNull()
     }
 
