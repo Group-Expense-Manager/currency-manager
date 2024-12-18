@@ -23,6 +23,7 @@ import pl.edu.agh.gem.internal.client.NBPClient
 import pl.edu.agh.gem.internal.client.NBPClientException
 import pl.edu.agh.gem.internal.client.RetryableNBPClientException
 import pl.edu.agh.gem.internal.model.ExchangeRate
+import pl.edu.agh.gem.metrics.MeteredClient
 import java.time.Clock
 import java.time.DayOfWeek.SATURDAY
 import java.time.DayOfWeek.SUNDAY
@@ -32,6 +33,7 @@ import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 import java.time.temporal.TemporalAdjusters.previousOrSame
 
 @Component
+@MeteredClient
 class RestNBPClient(
     @Qualifier("NBPRestTemplate") private val restTemplate: RestTemplate,
     private val nBPProperties: NBPProperties,
@@ -82,7 +84,7 @@ class RestNBPClient(
         }
     }
 
-    fun adjustToLastWednesday(date: LocalDate): LocalDate {
+    private fun adjustToLastWednesday(date: LocalDate): LocalDate {
         return date.with(previousOrSame(WEDNESDAY))
     }
 

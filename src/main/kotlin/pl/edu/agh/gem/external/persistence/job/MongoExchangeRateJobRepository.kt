@@ -2,7 +2,6 @@ package pl.edu.agh.gem.external.persistence.job
 
 import org.springframework.data.mongodb.core.FindAndModifyOptions
 import org.springframework.data.mongodb.core.MongoOperations
-import org.springframework.data.mongodb.core.findAndModify
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
@@ -12,10 +11,12 @@ import pl.edu.agh.gem.config.ExchangeRateJobProcessorProperties
 import pl.edu.agh.gem.internal.model.ExchangeRateJob
 import pl.edu.agh.gem.internal.persistence.ExchangeRateJobRepository
 import pl.edu.agh.gem.internal.persistence.MissingExchangeRateJobException
+import pl.edu.agh.gem.metrics.MeteredRepository
 import java.time.Clock
 import java.time.Duration
 
 @Repository
+@MeteredRepository
 class MongoExchangeRateJobRepository(
     private val mongoOperations: MongoOperations,
     private val exchangeRateJobProcessorProperties: ExchangeRateJobProcessorProperties,

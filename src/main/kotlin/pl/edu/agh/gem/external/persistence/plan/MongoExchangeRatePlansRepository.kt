@@ -11,9 +11,11 @@ import pl.edu.agh.gem.config.ExchangeRatePlanProcessorProperties
 import pl.edu.agh.gem.internal.model.ExchangeRatePlan
 import pl.edu.agh.gem.internal.persistence.ExchangePlanNotFoundException
 import pl.edu.agh.gem.internal.persistence.ExchangeRatePlanRepository
+import pl.edu.agh.gem.metrics.MeteredRepository
 import java.time.Clock
 
 @Repository
+@MeteredRepository
 class MongoExchangeRatePlansRepository(
     private val mongoOperations: MongoOperations,
     private val clock: Clock,

@@ -34,7 +34,7 @@ dependencyResolutionManagement {
             library("guava", "com.google.guava:guava:33.1.0-jre")
             library("kotlinlogging", "io.github.microutils:kotlin-logging:3.0.5")
             library("kotlinx-coroutines", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
-            library("lib-gem", "pl.edu.agh.gem:lib-gem:0.3.0")
+            library("lib-gem", "pl.edu.agh.gem:lib-gem:0.4.0")
 
             version("resilience4j", "2.2.0")
             library("resilience4j-kotlin", "io.github.resilience4j", "resilience4j-kotlin").versionRef("resilience4j")

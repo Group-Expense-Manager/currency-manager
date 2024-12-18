@@ -8,10 +8,12 @@ import org.springframework.stereotype.Repository
 import pl.edu.agh.gem.internal.model.ExchangeRate
 import pl.edu.agh.gem.internal.persistence.ExchangeRateRepository
 import pl.edu.agh.gem.internal.persistence.MissingExchangeRateException
+import pl.edu.agh.gem.metrics.MeteredRepository
 import java.time.Clock
 import java.time.LocalDate
 
 @Repository
+@MeteredRepository
 class MongoExchangeRateRepository(
     private val mongoOperations: MongoOperations,
     private val clock: Clock,
