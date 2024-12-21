@@ -14,11 +14,12 @@ import pl.edu.agh.gem.util.createExchangeRatePlan
 class ExchangeRatePlanFinderTest : ShouldSpec({
     val exchangeRatePlanRepository = mock<ExchangeRatePlanRepository>()
     val exchangeRatePlanProperties = mock<ExchangeRatePlanProcessorProperties>()
-    val exchangeRatePlanFinder = ExchangeRatePlanFinder(
-        TestThreadExecutor(),
-        exchangeRatePlanProperties,
-        exchangeRatePlanRepository,
-    )
+    val exchangeRatePlanFinder =
+        ExchangeRatePlanFinder(
+            TestThreadExecutor(),
+            exchangeRatePlanProperties,
+            exchangeRatePlanRepository,
+        )
 
     should("emit exchange rate plan") {
         // given
@@ -33,4 +34,4 @@ class ExchangeRatePlanFinderTest : ShouldSpec({
             it shouldBe exchangeRatePlan
         }
     }
-},)
+})

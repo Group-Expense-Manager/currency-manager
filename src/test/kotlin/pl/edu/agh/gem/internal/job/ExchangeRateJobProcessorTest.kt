@@ -13,21 +13,24 @@ import pl.edu.agh.gem.util.createExchangeRateJob
 class ExchangeRateJobProcessorTest : ShouldSpec({
     val currencyExchangeJobSelector = mock<CurrencyExchangeJobSelector>()
     val exchangeRateJobRepository = mock<ExchangeRateJobRepository>()
-    val exchangeRateJobProcessor = ExchangeRateJobProcessor(
-        currencyExchangeJobSelector,
-        exchangeRateJobRepository,
-    )
+    val exchangeRateJobProcessor =
+        ExchangeRateJobProcessor(
+            currencyExchangeJobSelector,
+            exchangeRateJobRepository,
+        )
 
     should("handle NextStage state transition") {
         // given
         val exchangeRateJob = createExchangeRateJob()
-        val nextStage = NextStage(
-            exchangeRateJob.copy(state = STARTING),
-            newState = STARTING,
-        )
-        val stateProcessor = mock<ProcessingStage> {
-            on { process(exchangeRateJob) } doReturn nextStage
-        }
+        val nextStage =
+            NextStage(
+                exchangeRateJob.copy(state = STARTING),
+                newState = STARTING,
+            )
+        val stateProcessor =
+            mock<ProcessingStage> {
+                on { process(exchangeRateJob) } doReturn nextStage
+            }
         whenever(currencyExchangeJobSelector.select(any())).thenReturn(stateProcessor)
 
         // when
@@ -40,9 +43,10 @@ class ExchangeRateJobProcessorTest : ShouldSpec({
     should("handle StageSuccess state transition") {
         // given
         val exchangeRateJob = createExchangeRateJob()
-        val stateProcessor = mock<ProcessingStage> {
-            on { process(exchangeRateJob) } doReturn StageSuccess
-        }
+        val stateProcessor =
+            mock<ProcessingStage> {
+                on { process(exchangeRateJob) } doReturn StageSuccess
+            }
         whenever(currencyExchangeJobSelector.select(any())).thenReturn(stateProcessor)
 
         // when
@@ -55,9 +59,10 @@ class ExchangeRateJobProcessorTest : ShouldSpec({
     should("handle StageFailure state transition") {
         // given
         val exchangeRateJob = createExchangeRateJob()
-        val stateProcessor = mock<ProcessingStage> {
-            on { process(exchangeRateJob) } doReturn StageFailure(Exception())
-        }
+        val stateProcessor =
+            mock<ProcessingStage> {
+                on { process(exchangeRateJob) } doReturn StageFailure(Exception())
+            }
         whenever(currencyExchangeJobSelector.select(any())).thenReturn(stateProcessor)
 
         // when
@@ -70,9 +75,10 @@ class ExchangeRateJobProcessorTest : ShouldSpec({
     should("handle StageRetry state transition") {
         // given
         val exchangeRateJob = createExchangeRateJob()
-        val stateProcessor = mock<ProcessingStage> {
-            on { process(exchangeRateJob) } doReturn StageRetry
-        }
+        val stateProcessor =
+            mock<ProcessingStage> {
+                on { process(exchangeRateJob) } doReturn StageRetry
+            }
         whenever(currencyExchangeJobSelector.select(any())).thenReturn(stateProcessor)
 
         // when
@@ -81,4 +87,4 @@ class ExchangeRateJobProcessorTest : ShouldSpec({
         // then
         verify(exchangeRateJobRepository).updateNextProcessAtAndRetry(exchangeRateJob)
     }
-},)
+})

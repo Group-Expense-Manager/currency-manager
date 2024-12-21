@@ -1,28 +1,8 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
-
-buildscript {
-    repositories {
-        mavenCentral()
-        mavenLocal()
-        maven("https://jitpack.io")
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/Group-Expense-Manager/gem-lib")
-            credentials {
-                username = project.findProperty("user") as String? ?: System.getenv("USERNAME")
-                password = project.findProperty("token") as String? ?: System.getenv("TOKEN")
-            }
-        }
-    }
-
-    dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${tools.versions.kotlin.get()}")
-    }
-}
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
@@ -34,10 +14,8 @@ plugins {
 
     alias(tools.plugins.dependency.management)
     alias(tools.plugins.spring.boot)
-    alias(tools.plugins.kover)
     alias(tools.plugins.detekt)
     alias(tools.plugins.ktlint.core)
-    alias(tools.plugins.ktlint.idea)
     alias(tools.plugins.scmversion)
     alias(tools.plugins.kotlin.jvm)
     alias(tools.plugins.kotlin.spring)
@@ -74,11 +52,6 @@ val integrationRuntime: Configuration by configurations.creating {
 val integrationImplementation: Configuration by configurations.creating {
     extendsFrom(configurations.testImplementation.get())
 }
-
-apply(plugin = "kotlin")
-apply(plugin = "kotlin-spring")
-apply(plugin = "java")
-apply(plugin = "kover")
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
@@ -142,12 +115,6 @@ kotlin {
     }
 }
 
-ktlint {
-    reporters {
-        reporter(ReporterType.PLAIN)
-    }
-}
-
 sourceSets {
     create("integration") {
         compileClasspath += project.sourceSets["main"].output + project.sourceSets["test"].output
@@ -157,14 +124,9 @@ sourceSets {
 }
 
 tasks {
-    withType<JavaCompile> {
-        options.encoding = "UTF-8"
-    }
-
     withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = tools.versions.jvm.get()
-            freeCompilerArgs = listOf("-Xjvm-default=all", "-Xemit-jvm-type-annotations")
+        compilerOptions {
+            jvmTarget.set(JvmTarget.fromTarget(tools.versions.jvm.get()))
         }
     }
 
@@ -177,10 +139,6 @@ tasks {
             junitXml.required = true
         }
         outputs.upToDateWhen { false }
-    }
-
-    withType<org.jlleitschuh.gradle.ktlint.tasks.BaseKtLintCheckTask> {
-        workerMaxHeapSize.set("512m")
     }
 
     create<Test>("integration") {
@@ -207,13 +165,6 @@ tasks {
 
     getByName<Jar>("jar") {
         enabled = false
-    }
-
-    withType<Detekt>().configureEach {
-        reports {
-            html.required.set(true)
-            md.required.set(true)
-        }
     }
 
     withType<Detekt>().configureEach {

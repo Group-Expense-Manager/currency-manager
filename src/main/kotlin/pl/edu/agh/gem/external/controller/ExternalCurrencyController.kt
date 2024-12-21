@@ -23,7 +23,6 @@ class ExternalCurrencyController(
     private val clock: Clock,
     private val currencyService: CurrencyService,
 ) {
-
     @GetMapping(produces = [APPLICATION_JSON_INTERNAL_VER_1])
     @ResponseStatus(OK)
     fun getAvailableCurrencies(): ExternalAvailableCurrenciesResponse {
@@ -37,6 +36,10 @@ class ExternalCurrencyController(
         @PathVariable currencyTo: String,
         @RequestParam date: LocalDate?,
     ): ExternalExchangeRateResponse {
-        return currencyService.getExchangeRate(currencyFrom, currencyTo, date ?: LocalDate.now(clock)).toExternalExchangeRateResponse()
+        return currencyService.getExchangeRate(
+            currencyFrom,
+            currencyTo,
+            date ?: LocalDate.now(clock),
+        ).toExternalExchangeRateResponse()
     }
 }

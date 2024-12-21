@@ -13,8 +13,7 @@ import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
 
-fun objectMapper() =
-    jacksonObjectMapper().registerModules(JavaTimeModule())
+fun objectMapper() = jacksonObjectMapper().registerModules(JavaTimeModule())
 
 fun createExchangeRate(
     currencyFrom: String = "USD",

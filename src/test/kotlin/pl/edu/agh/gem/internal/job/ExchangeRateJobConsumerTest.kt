@@ -11,10 +11,11 @@ import pl.edu.agh.gem.util.createExchangeRateJob
 class ExchangeRateJobConsumerTest : ShouldSpec({
     val exchangeRateJobFinder = mock<ExchangeRateJobFinder>()
     val exchangeRateJobProcessor = mock<ExchangeRateJobProcessor>()
-    val exchangeRateJobConsumer = ExchangeRateJobConsumer(
-        exchangeRateJobFinder,
-        exchangeRateJobProcessor,
-    )
+    val exchangeRateJobConsumer =
+        ExchangeRateJobConsumer(
+            exchangeRateJobFinder,
+            exchangeRateJobProcessor,
+        )
 
     should("successfully process exchange rate job") {
         // given
@@ -27,4 +28,4 @@ class ExchangeRateJobConsumerTest : ShouldSpec({
         // then
         verify(exchangeRateJobProcessor).processExchangeRateJob(exchangeRateJob)
     }
-},)
+})

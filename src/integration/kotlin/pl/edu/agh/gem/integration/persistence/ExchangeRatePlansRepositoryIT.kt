@@ -19,129 +19,131 @@ class ExchangeRatePlansRepositoryIT(
     private val exchangeRatePlanProcessorProperties: ExchangeRatePlanProcessorProperties,
 ) : BaseIntegrationSpec({
 
-    should("insert and get exchange rate plan by currency pair") {
-        // given
-        val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
-        val exchangeRatePlan = createExchangeRatePlan(currencyFrom = "USD", currencyTo = "PLN", forDate = localDate)
+        should("insert and get exchange rate plan by currency pair") {
+            // given
+            val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
+            val exchangeRatePlan = createExchangeRatePlan(currencyFrom = "USD", currencyTo = "PLN", forDate = localDate)
 
-        // when
-        val savedPlan = mongoExchangeRatePlansRepository.insert(exchangeRatePlan)
+            // when
+            val savedPlan = mongoExchangeRatePlansRepository.insert(exchangeRatePlan)
 
-        // then
-        savedPlan shouldBe exchangeRatePlan
-        val foundPlan = mongoExchangeRatePlansRepository.get("USD", "PLN")
-        foundPlan shouldBe exchangeRatePlan
-    }
-
-    should("find and delay next process time for a ready exchange rate plan") {
-        // given
-        val exchangeRatePlan = createExchangeRatePlan(currencyFrom = "USD", currencyTo = "PLN", nextProcessAt = FIXED_TIME)
-        mongoExchangeRatePlansRepository.insert(exchangeRatePlan)
-
-        // when
-        val planToProcess = mongoExchangeRatePlansRepository.findReadyAndDelay()
-
-        // then
-        planToProcess.shouldNotBeNull()
-        val foundPlan = mongoExchangeRatePlansRepository.get("USD", "PLN")
-        foundPlan.shouldNotBeNull()
-        foundPlan.currencyTo shouldBe exchangeRatePlan.currencyTo
-        foundPlan.currencyFrom shouldBe exchangeRatePlan.currencyFrom
-        foundPlan.forDate shouldBe exchangeRatePlan.forDate
-        foundPlan.nextProcessAt shouldBe FIXED_TIME.plus(exchangeRatePlanProcessorProperties.lockTime)
-    }
-
-    should("delete exchange rate plan by currency pair") {
-        // given
-        val exchangeRatePlan = createExchangeRatePlan(currencyFrom = "USD", currencyTo = "PLN")
-        mongoExchangeRatePlansRepository.insert(exchangeRatePlan)
-
-        // when
-        mongoExchangeRatePlansRepository.delete("USD", "PLN")
-
-        // then
-        val foundPlan = mongoExchangeRatePlansRepository.get("USD", "PLN")
-        foundPlan.shouldBeNull()
-    }
-
-    should("retry exchange rate plan") {
-        // given
-        val exchangeRatePlan = createExchangeRatePlan(currencyFrom = "USD", currencyTo = "PLN", nextProcessAt = FIXED_TIME)
-        mongoExchangeRatePlansRepository.insert(exchangeRatePlan)
-
-        // when
-        mongoExchangeRatePlansRepository.retry(exchangeRatePlan)
-
-        // then
-        val updatedPlan = mongoExchangeRatePlansRepository.get("USD", "PLN")
-        updatedPlan.shouldNotBeNull()
-        updatedPlan.currencyTo shouldBe exchangeRatePlan.currencyTo
-        updatedPlan.currencyFrom shouldBe exchangeRatePlan.currencyFrom
-        updatedPlan.forDate shouldBe exchangeRatePlan.forDate
-        updatedPlan.nextProcessAt shouldBe FIXED_TIME.plus(exchangeRatePlanProcessorProperties.retryDelay)
-    }
-
-    should("set next processing time for exchange rate plan") {
-        // given
-        val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
-        val exchangeRatePlan = createExchangeRatePlan(
-            currencyFrom = "USD",
-            currencyTo = "PLN",
-            forDate = localDate,
-            nextProcessAt = FIXED_TIME,
-        )
-        mongoExchangeRatePlansRepository.insert(exchangeRatePlan)
-        val nextTimeDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
-            .atStartOfDay(clock.zone)
-            .toInstant()
-            .plus(exchangeRatePlanProcessorProperties.nextTimeFromMidnight)
-
-        // when
-        val updatedPlan = mongoExchangeRatePlansRepository.setNextTime(exchangeRatePlan)
-
-        // then
-        updatedPlan.shouldNotBeNull()
-        updatedPlan.nextProcessAt shouldBe nextTimeDate
-        updatedPlan.forDate shouldBe LocalDate.ofInstant(nextTimeDate, clock.zone)
-    }
-
-    should("delete exchange rate plans that are not allowed") {
-        // given
-        val allowedPlan = createExchangeRatePlan(currencyFrom = "USD", currencyTo = "PLN")
-        val disallowedPlan = createExchangeRatePlan(currencyFrom = "EUR", currencyTo = "PLN")
-        mongoExchangeRatePlansRepository.insert(allowedPlan)
-        mongoExchangeRatePlansRepository.insert(disallowedPlan)
-
-        // when
-        mongoExchangeRatePlansRepository.deleteNotAllowed(listOf(Pair("USD", "PLN")))
-
-        // then
-        val foundAllowedPlan = mongoExchangeRatePlansRepository.get("USD", "PLN")
-        val foundDisallowedPlan = mongoExchangeRatePlansRepository.get("EUR", "PLN")
-        foundDisallowedPlan.shouldBeNull()
-        foundAllowedPlan.shouldNotBeNull()
-    }
-
-    should("throw ExchangePlanNotFoundException when setting next processing time for a non-existing plan") {
-        // given
-        val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
-        val nonExistingPlan = createExchangeRatePlan(currencyFrom = "USD", currencyTo = "PLN", forDate = localDate)
-
-        // when & then
-        shouldThrow<ExchangePlanNotFoundException> {
-            mongoExchangeRatePlansRepository.setNextTime(nonExistingPlan)
+            // then
+            savedPlan shouldBe exchangeRatePlan
+            val foundPlan = mongoExchangeRatePlansRepository.get("USD", "PLN")
+            foundPlan shouldBe exchangeRatePlan
         }
-    }
 
-    should("return null when no ready exchange rate plan is found") {
-        // given
-        val exchangeRatePlan = createExchangeRatePlan(nextProcessAt = FIXED_TIME.plusSeconds(3600))
-        mongoExchangeRatePlansRepository.insert(exchangeRatePlan)
+        should("find and delay next process time for a ready exchange rate plan") {
+            // given
+            val exchangeRatePlan = createExchangeRatePlan(currencyFrom = "USD", currencyTo = "PLN", nextProcessAt = FIXED_TIME)
+            mongoExchangeRatePlansRepository.insert(exchangeRatePlan)
 
-        // when
-        val planToProcess = mongoExchangeRatePlansRepository.findReadyAndDelay()
+            // when
+            val planToProcess = mongoExchangeRatePlansRepository.findReadyAndDelay()
 
-        // then
-        planToProcess.shouldBeNull()
-    }
-},)
+            // then
+            planToProcess.shouldNotBeNull()
+            val foundPlan = mongoExchangeRatePlansRepository.get("USD", "PLN")
+            foundPlan.shouldNotBeNull()
+            foundPlan.currencyTo shouldBe exchangeRatePlan.currencyTo
+            foundPlan.currencyFrom shouldBe exchangeRatePlan.currencyFrom
+            foundPlan.forDate shouldBe exchangeRatePlan.forDate
+            foundPlan.nextProcessAt shouldBe FIXED_TIME.plus(exchangeRatePlanProcessorProperties.lockTime)
+        }
+
+        should("delete exchange rate plan by currency pair") {
+            // given
+            val exchangeRatePlan = createExchangeRatePlan(currencyFrom = "USD", currencyTo = "PLN")
+            mongoExchangeRatePlansRepository.insert(exchangeRatePlan)
+
+            // when
+            mongoExchangeRatePlansRepository.delete("USD", "PLN")
+
+            // then
+            val foundPlan = mongoExchangeRatePlansRepository.get("USD", "PLN")
+            foundPlan.shouldBeNull()
+        }
+
+        should("retry exchange rate plan") {
+            // given
+            val exchangeRatePlan = createExchangeRatePlan(currencyFrom = "USD", currencyTo = "PLN", nextProcessAt = FIXED_TIME)
+            mongoExchangeRatePlansRepository.insert(exchangeRatePlan)
+
+            // when
+            mongoExchangeRatePlansRepository.retry(exchangeRatePlan)
+
+            // then
+            val updatedPlan = mongoExchangeRatePlansRepository.get("USD", "PLN")
+            updatedPlan.shouldNotBeNull()
+            updatedPlan.currencyTo shouldBe exchangeRatePlan.currencyTo
+            updatedPlan.currencyFrom shouldBe exchangeRatePlan.currencyFrom
+            updatedPlan.forDate shouldBe exchangeRatePlan.forDate
+            updatedPlan.nextProcessAt shouldBe FIXED_TIME.plus(exchangeRatePlanProcessorProperties.retryDelay)
+        }
+
+        should("set next processing time for exchange rate plan") {
+            // given
+            val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
+            val exchangeRatePlan =
+                createExchangeRatePlan(
+                    currencyFrom = "USD",
+                    currencyTo = "PLN",
+                    forDate = localDate,
+                    nextProcessAt = FIXED_TIME,
+                )
+            mongoExchangeRatePlansRepository.insert(exchangeRatePlan)
+            val nextTimeDate =
+                LocalDate.ofInstant(FIXED_TIME, clock.zone)
+                    .atStartOfDay(clock.zone)
+                    .toInstant()
+                    .plus(exchangeRatePlanProcessorProperties.nextTimeFromMidnight)
+
+            // when
+            val updatedPlan = mongoExchangeRatePlansRepository.setNextTime(exchangeRatePlan)
+
+            // then
+            updatedPlan.shouldNotBeNull()
+            updatedPlan.nextProcessAt shouldBe nextTimeDate
+            updatedPlan.forDate shouldBe LocalDate.ofInstant(nextTimeDate, clock.zone)
+        }
+
+        should("delete exchange rate plans that are not allowed") {
+            // given
+            val allowedPlan = createExchangeRatePlan(currencyFrom = "USD", currencyTo = "PLN")
+            val disallowedPlan = createExchangeRatePlan(currencyFrom = "EUR", currencyTo = "PLN")
+            mongoExchangeRatePlansRepository.insert(allowedPlan)
+            mongoExchangeRatePlansRepository.insert(disallowedPlan)
+
+            // when
+            mongoExchangeRatePlansRepository.deleteNotAllowed(listOf(Pair("USD", "PLN")))
+
+            // then
+            val foundAllowedPlan = mongoExchangeRatePlansRepository.get("USD", "PLN")
+            val foundDisallowedPlan = mongoExchangeRatePlansRepository.get("EUR", "PLN")
+            foundDisallowedPlan.shouldBeNull()
+            foundAllowedPlan.shouldNotBeNull()
+        }
+
+        should("throw ExchangePlanNotFoundException when setting next processing time for a non-existing plan") {
+            // given
+            val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
+            val nonExistingPlan = createExchangeRatePlan(currencyFrom = "USD", currencyTo = "PLN", forDate = localDate)
+
+            // when & then
+            shouldThrow<ExchangePlanNotFoundException> {
+                mongoExchangeRatePlansRepository.setNextTime(nonExistingPlan)
+            }
+        }
+
+        should("return null when no ready exchange rate plan is found") {
+            // given
+            val exchangeRatePlan = createExchangeRatePlan(nextProcessAt = FIXED_TIME.plusSeconds(3600))
+            mongoExchangeRatePlansRepository.insert(exchangeRatePlan)
+
+            // when
+            val planToProcess = mongoExchangeRatePlansRepository.findReadyAndDelay()
+
+            // then
+            planToProcess.shouldBeNull()
+        }
+    })

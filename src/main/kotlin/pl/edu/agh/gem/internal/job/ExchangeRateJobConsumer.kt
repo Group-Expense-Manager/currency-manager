@@ -1,10 +1,10 @@
 package pl.edu.agh.gem.internal.job
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
-import mu.KotlinLogging
 import pl.edu.agh.gem.internal.model.ExchangeRateJob
 import java.util.concurrent.Executor
 
@@ -12,18 +12,18 @@ class ExchangeRateJobConsumer(
     private val exchangeRateJobFinder: ExchangeRateJobFinder,
     private val exchangeRateJobProcessor: ExchangeRateJobProcessor,
 ) {
-
     private var job: Job? = null
 
     fun consume(consumerExecutor: Executor) {
-        job = CoroutineScope(consumerExecutor.asCoroutineDispatcher()).launch {
-            exchangeRateJobFinder.findJobToProcess()
-                .collect {
-                    launch {
-                        processWithExceptionHandling(it)
+        job =
+            CoroutineScope(consumerExecutor.asCoroutineDispatcher()).launch {
+                exchangeRateJobFinder.findJobToProcess()
+                    .collect {
+                        launch {
+                            processWithExceptionHandling(it)
+                        }
                     }
-                }
-        }
+            }
     }
 
     private fun processWithExceptionHandling(exchangeRateJob: ExchangeRateJob) {

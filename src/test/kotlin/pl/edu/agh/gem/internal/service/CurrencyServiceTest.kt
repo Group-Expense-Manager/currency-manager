@@ -42,9 +42,14 @@ class CurrencyServiceTest : ShouldSpec({
         ).thenReturn(exchangeRate)
 
         // when
-        val result = currencyService.getExchangeRate(exchangeRate.currencyFrom, exchangeRate.currencyTo, exchangeRate.forDate)
+        val result =
+            currencyService.getExchangeRate(
+                exchangeRate.currencyFrom,
+                exchangeRate.currencyTo,
+                exchangeRate.forDate,
+            )
 
         // then
         result shouldBe exchangeRate
     }
-},)
+})

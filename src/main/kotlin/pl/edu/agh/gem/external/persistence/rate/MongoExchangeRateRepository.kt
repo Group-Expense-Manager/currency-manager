@@ -14,7 +14,7 @@ import java.time.LocalDate
 
 @Repository
 @MeteredRepository
-class MongoExchangeRateRepository(
+open class MongoExchangeRateRepository(
     private val mongoOperations: MongoOperations,
     private val clock: Clock,
 ) : ExchangeRateRepository {
@@ -22,17 +22,22 @@ class MongoExchangeRateRepository(
         return mongoOperations.save(exchangeRate.toEntity(clock)).toDomain(clock)
     }
 
-    override fun getExchangeRate(currencyFrom: String, currencyTo: String, date: LocalDate): ExchangeRate {
-        val query = Query.query(
-            Criteria.where(ExchangeRateEntity::currencyFrom.name)
-                .isEqualTo(currencyFrom)
-                .and(ExchangeRateEntity::currencyTo.name)
-                .isEqualTo(currencyTo)
-                .and(ExchangeRateEntity::forDate.name)
-                .lte(date.atStartOfDay(clock.zone).toInstant())
-                .and(ExchangeRateEntity::validTo.name)
-                .gte(date.atStartOfDay(clock.zone).toInstant()),
-        )
+    override fun getExchangeRate(
+        currencyFrom: String,
+        currencyTo: String,
+        date: LocalDate,
+    ): ExchangeRate {
+        val query =
+            Query.query(
+                Criteria.where(ExchangeRateEntity::currencyFrom.name)
+                    .isEqualTo(currencyFrom)
+                    .and(ExchangeRateEntity::currencyTo.name)
+                    .isEqualTo(currencyTo)
+                    .and(ExchangeRateEntity::forDate.name)
+                    .lte(date.atStartOfDay(clock.zone).toInstant())
+                    .and(ExchangeRateEntity::validTo.name)
+                    .gte(date.atStartOfDay(clock.zone).toInstant()),
+            )
         return mongoOperations.findOne(query, ExchangeRateEntity::class.java)?.toDomain(clock)
             ?: throw MissingExchangeRateException(currencyTo, currencyFrom, date)
     }

@@ -12,10 +12,19 @@ import pl.edu.agh.gem.util.objectMapper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 
-private fun createExchangeRateUri(table: String, currency: String, date: LocalDate) =
-    "/api/exchangerates/rates/$table/$currency/${date.format(ISO_LOCAL_DATE)}/"
+private fun createExchangeRateUri(
+    table: String,
+    currency: String,
+    date: LocalDate,
+) = "/api/exchangerates/rates/$table/$currency/${date.format(ISO_LOCAL_DATE)}/"
 
-fun stubNBPExchangeRate(body: Any?, table: String, currency: String, date: LocalDate, statusCode: HttpStatusCode = OK) {
+fun stubNBPExchangeRate(
+    body: Any?,
+    table: String,
+    currency: String,
+    date: LocalDate,
+    statusCode: HttpStatusCode = OK,
+) {
     wiremock.stubFor(
         get(urlMatching(createExchangeRateUri(table, currency, date)))
             .willReturn(
@@ -25,7 +34,6 @@ fun stubNBPExchangeRate(body: Any?, table: String, currency: String, date: Local
                     .withBody(
                         objectMapper().writeValueAsString(body),
                     ),
-
             ),
     )
 }

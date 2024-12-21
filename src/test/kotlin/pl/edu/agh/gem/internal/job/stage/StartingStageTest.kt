@@ -13,10 +13,11 @@ class StartingStageTest : ShouldSpec({
 
     should("successfully process to next stage when currencies are not PLN") {
         // given
-        val exchangeRateJob = createExchangeRateJob(
-            currencyFrom = "USD",
-            currencyTo = "EUR",
-        )
+        val exchangeRateJob =
+            createExchangeRateJob(
+                currencyFrom = "USD",
+                currencyTo = "EUR",
+            )
 
         // when
         startingState.process(exchangeRateJob)
@@ -30,10 +31,11 @@ class StartingStageTest : ShouldSpec({
 
     should("successfully process to next stage when currencyFrom is PLN") {
         // given
-        val exchangeRateJob = createExchangeRateJob(
-            currencyFrom = "PLN",
-            currencyTo = "EUR",
-        )
+        val exchangeRateJob =
+            createExchangeRateJob(
+                currencyFrom = "PLN",
+                currencyTo = "EUR",
+            )
 
         // when
         startingState.process(exchangeRateJob)
@@ -47,10 +49,11 @@ class StartingStageTest : ShouldSpec({
 
     should("successfully process to next stage when currencyTo is PLN") {
         // given
-        val exchangeRateJob = createExchangeRateJob(
-            currencyFrom = "USD",
-            currencyTo = "PLN",
-        )
+        val exchangeRateJob =
+            createExchangeRateJob(
+                currencyFrom = "USD",
+                currencyTo = "PLN",
+            )
 
         // when
         startingState.process(exchangeRateJob)
@@ -61,4 +64,4 @@ class StartingStageTest : ShouldSpec({
             POLISH_EXCHANGE_RATE,
         )
     }
-},)
+})

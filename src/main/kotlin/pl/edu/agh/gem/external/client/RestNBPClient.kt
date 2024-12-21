@@ -1,6 +1,6 @@
 package pl.edu.agh.gem.external.client
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -34,23 +34,27 @@ import java.time.temporal.TemporalAdjusters.previousOrSame
 
 @Component
 @MeteredClient
-class RestNBPClient(
+open class RestNBPClient(
     @Qualifier("NBPRestTemplate") private val restTemplate: RestTemplate,
     private val nBPProperties: NBPProperties,
     private val exchangeRatesProperties: ExchangeRatesProperties,
     private val clock: Clock,
 ) : NBPClient {
-    override fun getPolishExchangeRate(currency: String, date: LocalDate): ExchangeRate {
+    override fun getPolishExchangeRate(
+        currency: String,
+        date: LocalDate,
+    ): ExchangeRate {
         val table = getTable(currency)
         val result: ResponseEntity<NBPExchangeResponse>
 
         try {
-            result = restTemplate.exchange(
-                resolveExchangeRateUrl(table, currency, getAdjustedDate(table, date)),
-                GET,
-                HttpEntity<Any>(HttpHeaders()),
-                NBPExchangeResponse::class.java,
-            )
+            result =
+                restTemplate.exchange(
+                    resolveExchangeRateUrl(table, currency, getAdjustedDate(table, date)),
+                    GET,
+                    HttpEntity<Any>(HttpHeaders()),
+                    NBPExchangeResponse::class.java,
+                )
         } catch (ex: HttpClientErrorException) {
             logger.warn(ex) { "Client side exception while trying to get exchange rate for $currency on date $date" }
             throw NBPClientException(ex.message)
@@ -67,9 +71,14 @@ class RestNBPClient(
     }
 
     private fun getTable(currency: String) =
-        nBPProperties.table.filterValues { it.currencies.contains(currency) }.keys.firstOrNull() ?: throw IncorrectCurrencyException(currency)
+        nBPProperties.table.filterValues {
+            it.currencies.contains(currency)
+        }.keys.firstOrNull() ?: throw IncorrectCurrencyException(currency)
 
-    private fun getAdjustedDate(table: ExchangeRateTable, date: LocalDate): LocalDate {
+    private fun getAdjustedDate(
+        table: ExchangeRateTable,
+        date: LocalDate,
+    ): LocalDate {
         return when (table) {
             A -> adjustToWeekday(date)
             B -> adjustToLastWednesday(date)
@@ -88,8 +97,11 @@ class RestNBPClient(
         return date.with(previousOrSame(WEDNESDAY))
     }
 
-    private fun resolveExchangeRateUrl(table: ExchangeRateTable, currency: String, date: LocalDate) =
-        "${nBPProperties.url}/api/exchangerates/rates/$table/$currency/${date.format(ISO_LOCAL_DATE)}/"
+    private fun resolveExchangeRateUrl(
+        table: ExchangeRateTable,
+        currency: String,
+        date: LocalDate,
+    ) = "${nBPProperties.url}/api/exchangerates/rates/$table/$currency/${date.format(ISO_LOCAL_DATE)}/"
 
     companion object {
         private val logger = KotlinLogging.logger {}

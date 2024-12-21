@@ -1,12 +1,12 @@
 package pl.edu.agh.gem.internal.job
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.time.delay
-import mu.KotlinLogging
 import pl.edu.agh.gem.config.ExchangeRateJobProcessorProperties
 import pl.edu.agh.gem.internal.model.ExchangeRateJob
 import pl.edu.agh.gem.internal.persistence.ExchangeRateJobRepository
@@ -17,22 +17,23 @@ class ExchangeRateJobFinder(
     private val exchangeRateJobProcessorProperties: ExchangeRateJobProcessorProperties,
     private val exchangeRateJobRepository: ExchangeRateJobRepository,
 ) {
-    fun findJobToProcess() = flow {
-        while (currentCoroutineContext().isActive) {
-            val exchangeRateJob = findExchangeRateJob()
-            exchangeRateJob?.let {
-                emit(it)
-                log.info { "Emitted exchange rate job : $it" }
+    fun findJobToProcess() =
+        flow {
+            while (currentCoroutineContext().isActive) {
+                val exchangeRateJob = findExchangeRateJob()
+                exchangeRateJob?.let {
+                    emit(it)
+                    log.info { "Emitted exchange rate job : $it" }
+                }
+                waitOnEmpty(exchangeRateJob)
             }
-            waitOnEmpty(exchangeRateJob)
-        }
-    }.flowOn(producerExecutor.asCoroutineDispatcher())
+        }.flowOn(producerExecutor.asCoroutineDispatcher())
 
     private fun findExchangeRateJob(): ExchangeRateJob? {
         try {
             return exchangeRateJobRepository.findJobToProcessAndLock()
         } catch (e: Exception) {
-            log.error("Error while finding currency exchange job to process", e)
+            log.error(e) { "Error while finding currency exchange job to process" }
             return null
         }
     }

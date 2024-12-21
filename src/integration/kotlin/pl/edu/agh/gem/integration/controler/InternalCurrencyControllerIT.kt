@@ -26,101 +26,107 @@ class InternalCurrencyControllerIT(
     private val clock: Clock,
 ) : BaseIntegrationSpec({
 
-    should("get available currencies successfully") {
-        // when
-        val response = service.getInternalAvailableCurrencies()
+        should("get available currencies successfully") {
+            // when
+            val response = service.getInternalAvailableCurrencies()
 
-        // then
-        response shouldHaveHttpStatus OK
-        response.shouldBody<InternalAvailableCurrenciesResponse> {
-            currencies.map { it.code }.toSet() shouldContainExactly setOf("USD", "EUR", "PLN")
+            // then
+            response shouldHaveHttpStatus OK
+            response.shouldBody<InternalAvailableCurrenciesResponse> {
+                currencies.map { it.code }.toSet() shouldContainExactly setOf("USD", "EUR", "PLN")
+            }
         }
-    }
 
-    should("get exchange rate successfully") {
-        // given
-        val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
-        val exchangeRate = createExchangeRate(
-            currencyTo = "PLN",
-            currencyFrom = "USD",
-            rate = "3.75".toBigDecimal(),
-            forDate = localDate,
-            createdAt = FIXED_TIME,
-            validTo = localDate.plus(1, DAYS),
-        )
-        exchangeRateRepository.save(exchangeRate)
+        should("get exchange rate successfully") {
+            // given
+            val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
+            val exchangeRate =
+                createExchangeRate(
+                    currencyTo = "PLN",
+                    currencyFrom = "USD",
+                    rate = "3.75".toBigDecimal(),
+                    forDate = localDate,
+                    createdAt = FIXED_TIME,
+                    validTo = localDate.plus(1, DAYS),
+                )
+            exchangeRateRepository.save(exchangeRate)
 
-        // when
-        val response = service.getInternalExchangeRate(
-            currencyTo = exchangeRate.currencyTo,
-            currencyFrom = exchangeRate.currencyFrom,
-            date = exchangeRate.forDate,
-        )
+            // when
+            val response =
+                service.getInternalExchangeRate(
+                    currencyTo = exchangeRate.currencyTo,
+                    currencyFrom = exchangeRate.currencyFrom,
+                    date = exchangeRate.forDate,
+                )
 
-        // then
-        response shouldHaveHttpStatus OK
-        response.shouldBody<InternalExchangeRateResponse> {
-            currencyFrom shouldBe exchangeRate.currencyFrom
-            currencyTo shouldBe exchangeRate.currencyTo
-            rate shouldBe exchangeRate.exchangeRate
-            createdAt shouldBe exchangeRate.createdAt
+            // then
+            response shouldHaveHttpStatus OK
+            response.shouldBody<InternalExchangeRateResponse> {
+                currencyFrom shouldBe exchangeRate.currencyFrom
+                currencyTo shouldBe exchangeRate.currencyTo
+                rate shouldBe exchangeRate.exchangeRate
+                createdAt shouldBe exchangeRate.createdAt
+            }
         }
-    }
 
-    should("get exchange rate successfully when date is null") {
-        // given
-        val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
-        val exchangeRate = createExchangeRate(
-            currencyTo = "PLN",
-            currencyFrom = "USD",
-            rate = "3.75".toBigDecimal(),
-            forDate = localDate,
-            createdAt = FIXED_TIME,
-            validTo = localDate.plus(1, DAYS),
-        )
-        exchangeRateRepository.save(exchangeRate)
+        should("get exchange rate successfully when date is null") {
+            // given
+            val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
+            val exchangeRate =
+                createExchangeRate(
+                    currencyTo = "PLN",
+                    currencyFrom = "USD",
+                    rate = "3.75".toBigDecimal(),
+                    forDate = localDate,
+                    createdAt = FIXED_TIME,
+                    validTo = localDate.plus(1, DAYS),
+                )
+            exchangeRateRepository.save(exchangeRate)
 
-        // when
-        val response = service.getInternalExchangeRate(
-            currencyTo = exchangeRate.currencyTo,
-            currencyFrom = exchangeRate.currencyFrom,
-            date = null,
-        )
+            // when
+            val response =
+                service.getInternalExchangeRate(
+                    currencyTo = exchangeRate.currencyTo,
+                    currencyFrom = exchangeRate.currencyFrom,
+                    date = null,
+                )
 
-        // then
-        response shouldHaveHttpStatus OK
-        response.shouldBody<InternalExchangeRateResponse> {
-            currencyFrom shouldBe exchangeRate.currencyFrom
-            currencyTo shouldBe exchangeRate.currencyTo
-            rate shouldBe exchangeRate.exchangeRate
-            createdAt.shouldNotBeNull()
+            // then
+            response shouldHaveHttpStatus OK
+            response.shouldBody<InternalExchangeRateResponse> {
+                currencyFrom shouldBe exchangeRate.currencyFrom
+                currencyTo shouldBe exchangeRate.currencyTo
+                rate shouldBe exchangeRate.exchangeRate
+                createdAt.shouldNotBeNull()
+            }
         }
-    }
 
-    should("response with NOT_FOUND when exchange rate not found") {
-        // given
-        val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
-        val exchangeRate = createExchangeRate(
-            currencyTo = "PLN",
-            currencyFrom = "USD",
-            rate = "3.75".toBigDecimal(),
-            forDate = localDate,
-            createdAt = FIXED_TIME,
-            validTo = localDate.plus(1, DAYS),
-        )
+        should("response with NOT_FOUND when exchange rate not found") {
+            // given
+            val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
+            val exchangeRate =
+                createExchangeRate(
+                    currencyTo = "PLN",
+                    currencyFrom = "USD",
+                    rate = "3.75".toBigDecimal(),
+                    forDate = localDate,
+                    createdAt = FIXED_TIME,
+                    validTo = localDate.plus(1, DAYS),
+                )
 
-        // when
-        val response = service.getInternalExchangeRate(
-            currencyTo = exchangeRate.currencyTo,
-            currencyFrom = exchangeRate.currencyFrom,
-            date = null,
-        )
+            // when
+            val response =
+                service.getInternalExchangeRate(
+                    currencyTo = exchangeRate.currencyTo,
+                    currencyFrom = exchangeRate.currencyFrom,
+                    date = null,
+                )
 
-        // then
-        response shouldHaveHttpStatus NOT_FOUND
-        response shouldHaveErrors {
-            errors shouldHaveSize 1
-            errors.first().code shouldBe MissingExchangeRateException::class.simpleName
+            // then
+            response shouldHaveHttpStatus NOT_FOUND
+            response shouldHaveErrors {
+                errors shouldHaveSize 1
+                errors.first().code shouldBe MissingExchangeRateException::class.simpleName
+            }
         }
-    }
-},)
+    })

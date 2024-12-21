@@ -27,63 +27,67 @@ class ExchangeRatePlanIT(
     private val mongoClient: MongoClient,
     private val exchangeRatePlanProcessorProperties: ExchangeRatePlanProcessorProperties,
 ) : BaseIntegrationSpec(
-    {
-        should("process exchange plan job successfully") {
-            // given
-            val startedTime = testClock.instant()
-            whenever(clock.instant()).thenAnswer { FIXED_TIME.plusSeconds(elapsedSeconds(startedTime)) }
-            val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
+        {
+            should("process exchange plan job successfully") {
+                // given
+                val startedTime = testClock.instant()
+                whenever(clock.instant()).thenAnswer { FIXED_TIME.plusSeconds(elapsedSeconds(startedTime)) }
+                val localDate = LocalDate.ofInstant(FIXED_TIME, clock.zone)
 
-            val firstExchangeRateResponse = createNBPExchangeResponse(
-                code = "USD",
-            )
-            val secondExchangeRateResponse = createNBPExchangeResponse(
-                code = "EUR",
-            )
-            val exchangeRateJob = createExchangeRatePlan(
-                currencyFrom = firstExchangeRateResponse.code,
-                currencyTo = secondExchangeRateResponse.code,
-                forDate = localDate,
-                nextProcessAt = FIXED_TIME,
-            )
-            stubNBPExchangeRate(
-                firstExchangeRateResponse,
-                firstExchangeRateResponse.table,
-                firstExchangeRateResponse.code,
-                localDate,
-            )
-            stubNBPExchangeRate(
-                secondExchangeRateResponse,
-                secondExchangeRateResponse.table,
-                secondExchangeRateResponse.code,
-                localDate,
-            )
+                val firstExchangeRateResponse =
+                    createNBPExchangeResponse(
+                        code = "USD",
+                    )
+                val secondExchangeRateResponse =
+                    createNBPExchangeResponse(
+                        code = "EUR",
+                    )
+                val exchangeRateJob =
+                    createExchangeRatePlan(
+                        currencyFrom = firstExchangeRateResponse.code,
+                        currencyTo = secondExchangeRateResponse.code,
+                        forDate = localDate,
+                        nextProcessAt = FIXED_TIME,
+                    )
+                stubNBPExchangeRate(
+                    firstExchangeRateResponse,
+                    firstExchangeRateResponse.table,
+                    firstExchangeRateResponse.code,
+                    localDate,
+                )
+                stubNBPExchangeRate(
+                    secondExchangeRateResponse,
+                    secondExchangeRateResponse.table,
+                    secondExchangeRateResponse.code,
+                    localDate,
+                )
 
-            // when
-            exchangeRatePlanRepository.insert(exchangeRateJob)
+                // when
+                exchangeRatePlanRepository.insert(exchangeRateJob)
 
-            // then
-            waitTillExchangePlan(exchangeRatePlanRepository, firstExchangeRateResponse.code, secondExchangeRateResponse.code, localDate)
-            waitTillExchangePlan(mongoClient)
-            val exchangeRate = exchangeRateRepository.getExchangeRate(
-                firstExchangeRateResponse.code,
-                secondExchangeRateResponse.code,
-                localDate,
-            )
-            exchangeRate.exchangeRate shouldBe firstExchangeRateResponse.rates.first().mid.divide(secondExchangeRateResponse.rates.first().mid)
-            exchangeRate.currencyTo shouldBe secondExchangeRateResponse.code
-            exchangeRate.currencyFrom shouldBe firstExchangeRateResponse.code
-            exchangeRate.forDate shouldBe localDate
-            exchangeRate.validTo shouldNotBeBefore localDate
-            exchangeRate.createdAt.shouldNotBeNull()
-            val exchangeRatePlan = exchangeRatePlanRepository.get(firstExchangeRateResponse.code, secondExchangeRateResponse.code)
-            exchangeRatePlan.shouldNotBeNull()
-            exchangeRatePlan.currencyFrom shouldBe firstExchangeRateResponse.code
-            exchangeRatePlan.currencyTo shouldBe secondExchangeRateResponse.code
-            exchangeRatePlan.forDate shouldBe localDate.plusDays(exchangeRatePlanProcessorProperties.nextTimeFromMidnight.toDays())
-        }
-    },
-)
+                // then
+                waitTillExchangePlan(exchangeRatePlanRepository, firstExchangeRateResponse.code, secondExchangeRateResponse.code, localDate)
+                waitTillExchangePlan(mongoClient)
+                val exchangeRate =
+                    exchangeRateRepository.getExchangeRate(
+                        firstExchangeRateResponse.code,
+                        secondExchangeRateResponse.code,
+                        localDate,
+                    )
+                exchangeRate.exchangeRate shouldBe firstExchangeRateResponse.rates.first().mid.divide(secondExchangeRateResponse.rates.first().mid)
+                exchangeRate.currencyTo shouldBe secondExchangeRateResponse.code
+                exchangeRate.currencyFrom shouldBe firstExchangeRateResponse.code
+                exchangeRate.forDate shouldBe localDate
+                exchangeRate.validTo shouldNotBeBefore localDate
+                exchangeRate.createdAt.shouldNotBeNull()
+                val exchangeRatePlan = exchangeRatePlanRepository.get(firstExchangeRateResponse.code, secondExchangeRateResponse.code)
+                exchangeRatePlan.shouldNotBeNull()
+                exchangeRatePlan.currencyFrom shouldBe firstExchangeRateResponse.code
+                exchangeRatePlan.currencyTo shouldBe secondExchangeRateResponse.code
+                exchangeRatePlan.forDate shouldBe localDate.plusDays(exchangeRatePlanProcessorProperties.nextTimeFromMidnight.toDays())
+            }
+        },
+    )
 
 private suspend fun waitTillExchangePlan(
     exchangeRatePlanRepository: ExchangeRatePlanRepository,

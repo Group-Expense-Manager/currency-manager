@@ -1,6 +1,6 @@
 package pl.edu.agh.gem.internal.job
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import pl.edu.agh.gem.internal.model.ExchangeRateJob
 import pl.edu.agh.gem.internal.persistence.ExchangeRateJobRepository
@@ -14,13 +14,21 @@ class ExchangeRateJobProcessor(
         when (val nextState = currencyExchangeJobSelector.select(exchangeRateJob.state).process(exchangeRateJob)) {
             is NextStage -> handleNextStage(nextState)
             is StageSuccess -> handleStateSuccess(exchangeRateJob)
-            is StageFailure -> handleStateFailure(exchangeRateJob)
-                .also { log.error(nextState.exception) { "Failure occurred on ${exchangeRateJob.currencyFrom} -> ${exchangeRateJob.currencyTo}" } }
+            is StageFailure ->
+                handleStateFailure(exchangeRateJob)
+                    .also {
+                        log.error(
+                            nextState.exception,
+                        ) { "Failure occurred on ${exchangeRateJob.currencyFrom} -> ${exchangeRateJob.currencyTo}" }
+                    }
             is StageRetry -> handleStateRetry(exchangeRateJob)
         }
     }
+
     private fun handleStateSuccess(exchangeRateJob: ExchangeRateJob) {
-        log.info { "Success on processed state: ${exchangeRateJob.state} for ${exchangeRateJob.currencyFrom} -> ${exchangeRateJob.currencyTo}" }
+        log.info {
+            "Success on processed state: ${exchangeRateJob.state} for ${exchangeRateJob.currencyFrom} -> ${exchangeRateJob.currencyTo}"
+        }
         currencyExchangeJobRepository.remove(exchangeRateJob)
     }
 
