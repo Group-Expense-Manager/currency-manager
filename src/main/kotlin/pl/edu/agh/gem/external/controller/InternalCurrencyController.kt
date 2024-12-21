@@ -23,7 +23,6 @@ class InternalCurrencyController(
     private val clock: Clock,
     private val currencyService: CurrencyService,
 ) {
-
     @GetMapping(produces = [APPLICATION_JSON_INTERNAL_VER_1])
     @ResponseStatus(OK)
     fun getAvailableCurrencies(): InternalAvailableCurrenciesResponse {
@@ -37,6 +36,10 @@ class InternalCurrencyController(
         @PathVariable currencyTo: String,
         @RequestParam date: LocalDate?,
     ): InternalExchangeRateResponse {
-        return currencyService.getExchangeRate(currencyFrom, currencyTo, date ?: LocalDate.now(clock)).toInternalExchangeRateResponse()
+        return currencyService.getExchangeRate(
+            currencyFrom,
+            currencyTo,
+            date ?: LocalDate.now(clock),
+        ).toInternalExchangeRateResponse()
     }
 }

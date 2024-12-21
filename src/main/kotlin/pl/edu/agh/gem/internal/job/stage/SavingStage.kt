@@ -16,7 +16,9 @@ class SavingStage(
     private val exchangeRatesProperties: ExchangeRatesProperties,
 ) : ProcessingStage() {
     override fun process(exchangeRateJob: ExchangeRateJob): StageResult {
-        logger.info { "Saving exchange rate for ${exchangeRateJob.currencyFrom} -> ${exchangeRateJob.currencyTo} on ${exchangeRateJob.forDate}" }
+        logger.info {
+            "Saving exchange rate for ${exchangeRateJob.currencyFrom} -> ${exchangeRateJob.currencyTo} on ${exchangeRateJob.forDate}"
+        }
         exchangeRateRepository.save(
             ExchangeRate(
                 currencyFrom = exchangeRateJob.currencyFrom,
@@ -32,4 +34,6 @@ class SavingStage(
 }
 
 class MissingExchangeRateInSavingStageException(exchangeRateJob: ExchangeRateJob) :
-    RuntimeException("No exchange rate found for ${exchangeRateJob.currencyFrom} -> ${exchangeRateJob.currencyTo} on ${exchangeRateJob.forDate}")
+    RuntimeException(
+        "No exchange rate found for ${exchangeRateJob.currencyFrom} -> ${exchangeRateJob.currencyTo} on ${exchangeRateJob.forDate}",
+    )

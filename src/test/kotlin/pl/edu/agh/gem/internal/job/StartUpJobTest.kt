@@ -19,14 +19,15 @@ class StartUpJobTest : ShouldSpec({
     val startUpJob = StartUpJob(availableCurrenciesProperties, exchangeRatePlanRepository, clock)
 
     val currencyCodes = listOf("USD", "EUR", "PLN")
-    val allowedCurrencyPairs = listOf(
-        "USD" to "EUR",
-        "USD" to "PLN",
-        "EUR" to "USD",
-        "EUR" to "PLN",
-        "PLN" to "USD",
-        "PLN" to "EUR",
-    )
+    val allowedCurrencyPairs =
+        listOf(
+            "USD" to "EUR",
+            "USD" to "PLN",
+            "EUR" to "USD",
+            "EUR" to "PLN",
+            "PLN" to "USD",
+            "PLN" to "EUR",
+        )
 
     should("insert all allowed plans if they do not exist") {
         // given
@@ -54,4 +55,4 @@ class StartUpJobTest : ShouldSpec({
         // then
         verify(exchangeRatePlanRepository).deleteNotAllowed(allowedCurrencyPairs)
     }
-},)
+})

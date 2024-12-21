@@ -14,7 +14,6 @@ class StartUpJob(
     private val exchangeRatePlanRepository: ExchangeRatePlanRepository,
     private val clock: Clock,
 ) : InitializingBean {
-
     override fun afterPropertiesSet() {
         val allowedCurrencyPairs = getAllPairsOfCurrencies()
         deleteAllNotAllowedPlans(allowedCurrencyPairs)

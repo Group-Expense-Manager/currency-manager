@@ -20,11 +20,12 @@ class ExchangeRatePlanProcessorTest : ShouldSpec({
     val exchangeRateJobRepository = mock<ExchangeRateJobRepository>()
     val exchangeRatePlanRepository = mock<ExchangeRatePlanRepository>()
     val clock = Clock.fixed(Instant.parse("2021-01-01T00:00:00Z"), ZoneId.of("UTC"))
-    val exchangeRatePlanProcessor = ExchangeRatePlanProcessor(
-        exchangeRateJobRepository,
-        exchangeRatePlanRepository,
-        clock,
-    )
+    val exchangeRatePlanProcessor =
+        ExchangeRatePlanProcessor(
+            exchangeRateJobRepository,
+            exchangeRatePlanRepository,
+            clock,
+        )
 
     should("process exchange rate plan correctly") {
         // given
@@ -47,4 +48,4 @@ class ExchangeRatePlanProcessorTest : ShouldSpec({
         }
         verify(exchangeRatePlanRepository).setNextTime(exchangeRatePlan)
     }
-},)
+})

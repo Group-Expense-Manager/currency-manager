@@ -9,11 +9,12 @@ class InternalAvailableCurrenciesResponseTest : ShouldSpec({
 
     should("correctly map List<Currency> to AvailableCurrenciesResponse") {
         // given
-        val currencies = listOf(
-            Currency(code = "USD"),
-            Currency(code = "EUR"),
-            Currency(code = "JPY"),
-        )
+        val currencies =
+            listOf(
+                Currency(code = "USD"),
+                Currency(code = "EUR"),
+                Currency(code = "JPY"),
+            )
 
         // when
         val availableCurrenciesResponse = currencies.toInternalAvailableCurrenciesResponse()
@@ -34,4 +35,4 @@ class InternalAvailableCurrenciesResponseTest : ShouldSpec({
         // then
         availableCurrenciesResponse.currencies.shouldBeEmpty()
     }
-},)
+})

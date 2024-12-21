@@ -10,6 +10,7 @@ data class InternalCurrencyDto(
     val code: String,
 )
 
-fun List<Currency>.toInternalAvailableCurrenciesResponse() = InternalAvailableCurrenciesResponse(
-    currencies = map { InternalCurrencyDto(it.code) },
-)
+fun List<Currency>.toInternalAvailableCurrenciesResponse() =
+    InternalAvailableCurrenciesResponse(
+        currencies = map { InternalCurrencyDto(it.code) },
+    )

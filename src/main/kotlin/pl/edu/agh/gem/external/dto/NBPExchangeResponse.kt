@@ -19,7 +19,10 @@ data class NBPExchangeRate(
     val mid: BigDecimal,
 )
 
-fun NBPExchangeResponse.toExchangeRate(clock: Clock, validDuration: Duration) = ExchangeRate(
+fun NBPExchangeResponse.toExchangeRate(
+    clock: Clock,
+    validDuration: Duration,
+) = ExchangeRate(
     currencyFrom = code,
     currencyTo = "PLN",
     exchangeRate = rates.first().mid,

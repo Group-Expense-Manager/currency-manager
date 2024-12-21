@@ -1,13 +1,15 @@
 package pl.edu.agh.gem.internal.job
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import pl.edu.agh.gem.internal.model.ExchangeRateJob
 
 abstract class ProcessingStage {
-
     abstract fun process(exchangeRateJob: ExchangeRateJob): StageResult
 
-    fun nextStage(exchangeRateJob: ExchangeRateJob, nextState: ExchangeRateJobState): StageResult {
+    fun nextStage(
+        exchangeRateJob: ExchangeRateJob,
+        nextState: ExchangeRateJobState,
+    ): StageResult {
         return NextStage(exchangeRateJob, nextState)
     }
 

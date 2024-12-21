@@ -14,11 +14,12 @@ data class InternalExchangeRateResponse(
     val validTo: LocalDate,
 )
 
-fun ExchangeRate.toInternalExchangeRateResponse() = InternalExchangeRateResponse(
-    currencyFrom = currencyFrom,
-    currencyTo = currencyTo,
-    rate = exchangeRate,
-    createdAt = createdAt,
-    forDate = forDate,
-    validTo = validTo,
-)
+fun ExchangeRate.toInternalExchangeRateResponse() =
+    InternalExchangeRateResponse(
+        currencyFrom = currencyFrom,
+        currencyTo = currencyTo,
+        rate = exchangeRate,
+        createdAt = createdAt,
+        forDate = forDate,
+        validTo = validTo,
+    )

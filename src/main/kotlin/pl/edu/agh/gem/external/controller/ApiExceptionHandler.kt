@@ -16,18 +16,13 @@ import pl.edu.agh.gem.internal.persistence.MissingExchangeRateException
 @ControllerAdvice
 @Order(LOWEST_PRECEDENCE)
 class ApiExceptionHandler {
-
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleMethodArgumentNotValidException(
-        exception: MethodArgumentNotValidException,
-    ): ResponseEntity<SimpleErrorsHolder> {
+    fun handleMethodArgumentNotValidException(exception: MethodArgumentNotValidException): ResponseEntity<SimpleErrorsHolder> {
         return ResponseEntity(handleNotValidException(exception), BAD_REQUEST)
     }
 
     @ExceptionHandler(MissingExchangeRateException::class)
-    fun handleMissingExchangeRateException(
-        exception: MissingExchangeRateException,
-    ): ResponseEntity<SimpleErrorsHolder> {
+    fun handleMissingExchangeRateException(exception: MissingExchangeRateException): ResponseEntity<SimpleErrorsHolder> {
         return ResponseEntity(handleError(exception), NOT_FOUND)
     }
 }

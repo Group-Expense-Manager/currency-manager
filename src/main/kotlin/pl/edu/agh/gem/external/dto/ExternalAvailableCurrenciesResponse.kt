@@ -10,6 +10,7 @@ data class ExternalCurrencyDto(
     val code: String,
 )
 
-fun List<Currency>.toExternalAvailableCurrenciesResponse() = ExternalAvailableCurrenciesResponse(
-    currencies = map { ExternalCurrencyDto(it.code) },
-)
+fun List<Currency>.toExternalAvailableCurrenciesResponse() =
+    ExternalAvailableCurrenciesResponse(
+        currencies = map { ExternalCurrencyDto(it.code) },
+    )

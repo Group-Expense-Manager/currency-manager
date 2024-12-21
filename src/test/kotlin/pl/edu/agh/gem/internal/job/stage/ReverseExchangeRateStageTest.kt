@@ -23,11 +23,12 @@ class ReverseExchangeRateStageTest : ShouldSpec({
     should("successfully process exchange rates") {
         // given
         val exchangeRateJob = createExchangeRateJob()
-        val exchangeRateTo = createExchangeRate(
-            currencyFrom = "PLN",
-            currencyTo = exchangeRateJob.currencyTo,
-            rate = "0.3".toBigDecimal(),
-        )
+        val exchangeRateTo =
+            createExchangeRate(
+                currencyFrom = "PLN",
+                currencyTo = exchangeRateJob.currencyTo,
+                rate = "0.3".toBigDecimal(),
+            )
 
         whenever(nBPClient.getPolishExchangeRate(exchangeRateJob.currencyTo, exchangeRateJob.forDate))
             .thenReturn(exchangeRateTo)
@@ -72,4 +73,4 @@ class ReverseExchangeRateStageTest : ShouldSpec({
         // then
         verify(reversePolishExchangeRateStage).failure(any())
     }
-},)
+})

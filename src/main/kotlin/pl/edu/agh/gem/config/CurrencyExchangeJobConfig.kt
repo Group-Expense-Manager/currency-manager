@@ -15,7 +15,6 @@ import java.util.concurrent.Executor
 
 @Configuration
 class CurrencyExchangeJobConfig {
-
     @Bean(destroyMethod = "destroy")
     @ConditionalOnProperty(prefix = CURRENCY_EXCHANGE_PROCESSOR_PREFIX, name = ["enabled"], havingValue = "true")
     fun currencyExchangeConsumer(
@@ -23,10 +22,11 @@ class CurrencyExchangeJobConfig {
         currencyExchangeRateJobFinder: ExchangeRateJobFinder,
         currencyExchangeRateJobProcessor: ExchangeRateJobProcessor,
     ): ExchangeRateJobConsumer {
-        val exchangeRateJobConsumer = ExchangeRateJobConsumer(
-            currencyExchangeRateJobFinder,
-            currencyExchangeRateJobProcessor,
-        )
+        val exchangeRateJobConsumer =
+            ExchangeRateJobConsumer(
+                currencyExchangeRateJobFinder,
+                currencyExchangeRateJobProcessor,
+            )
         exchangeRateJobConsumer.consume(jobConsumerExecutor)
         return exchangeRateJobConsumer
     }
@@ -47,12 +47,13 @@ class CurrencyExchangeJobConfig {
         executorFactory: ExecutorFactory,
         settings: CurrencyExchangeJobExecutorProperties,
     ): Executor {
-        val config = ExecutorConfig(
-            corePoolSize = settings.corePoolSize,
-            maxPoolSize = settings.maxPoolSize,
-            taskQueueSize = settings.queueCapacity,
-            threadPoolName = CONSUMER_POOL,
-        )
+        val config =
+            ExecutorConfig(
+                corePoolSize = settings.corePoolSize,
+                maxPoolSize = settings.maxPoolSize,
+                taskQueueSize = settings.queueCapacity,
+                threadPoolName = CONSUMER_POOL,
+            )
         return executorFactory.createExecutor(config)
     }
 
@@ -61,12 +62,13 @@ class CurrencyExchangeJobConfig {
         executorFactory: ExecutorFactory,
         settings: CurrencyExchangeJobProducerProperties,
     ): Executor {
-        val config = ExecutorConfig(
-            corePoolSize = settings.corePoolSize,
-            maxPoolSize = settings.maxPoolSize,
-            taskQueueSize = settings.queueCapacity,
-            threadPoolName = PRODUCER_POOL,
-        )
+        val config =
+            ExecutorConfig(
+                corePoolSize = settings.corePoolSize,
+                maxPoolSize = settings.maxPoolSize,
+                taskQueueSize = settings.queueCapacity,
+                threadPoolName = PRODUCER_POOL,
+            )
         return executorFactory.createExecutor(config)
     }
 

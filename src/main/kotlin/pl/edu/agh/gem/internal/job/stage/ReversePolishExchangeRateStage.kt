@@ -18,10 +18,11 @@ class ReversePolishExchangeRateStage(
     override fun process(exchangeRateJob: ExchangeRateJob): StageResult {
         logger.info { "Getting exchange rate for PLN -> ${exchangeRateJob.currencyTo} on ${exchangeRateJob.forDate}" }
         return try {
-            val exchangeRateToCurrency = nBPClient.getPolishExchangeRate(
-                exchangeRateJob.currencyTo,
-                exchangeRateJob.forDate,
-            )
+            val exchangeRateToCurrency =
+                nBPClient.getPolishExchangeRate(
+                    exchangeRateJob.currencyTo,
+                    exchangeRateJob.forDate,
+                )
             val exchangeRate = ONE.divide(exchangeRateToCurrency.exchangeRate, DECIMAL128)
             return nextStage(exchangeRateJob.addExchangeRate(exchangeRate), SAVING)
         } catch (exception: RetryableNBPClientException) {

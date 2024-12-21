@@ -16,7 +16,11 @@ class CurrencyService(
         return availableCurrenciesProperties.codes.map { Currency(it) }
     }
 
-    fun getExchangeRate(currencyFrom: String, currencyTo: String, date: LocalDate): ExchangeRate {
+    fun getExchangeRate(
+        currencyFrom: String,
+        currencyTo: String,
+        date: LocalDate,
+    ): ExchangeRate {
         return exchangeRateRepository.getExchangeRate(currencyFrom, currencyTo, date)
     }
 }
