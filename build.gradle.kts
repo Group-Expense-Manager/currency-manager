@@ -148,7 +148,7 @@ tasks {
         classpath = sourceSets["integration"].runtimeClasspath
         mustRunAfter("test")
     }
-    
+
     check {
         dependsOn("integration")
     }
