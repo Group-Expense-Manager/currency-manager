@@ -92,7 +92,7 @@ dependencies {
 }
 
 tasks.wrapper {
-    gradleVersion = "8.5"
+    gradleVersion = "8.12"
 }
 
 repositories {
@@ -141,13 +141,14 @@ tasks {
         outputs.upToDateWhen { false }
     }
 
-    create<Test>("integration") {
+    register<Test>("integration") {
         description = "Runs the integration tests."
         group = "verification"
         testClassesDirs = sourceSets["integration"].output.classesDirs
         classpath = sourceSets["integration"].runtimeClasspath
         mustRunAfter("test")
     }
+    
     check {
         dependsOn("integration")
     }
