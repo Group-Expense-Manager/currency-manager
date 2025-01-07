@@ -146,7 +146,7 @@ components:
 
 
     MissingExchangeRateException:
-      description: Exchange rate not found
+      description: Exchange rate not found for the given currency pair and date.
       content:
         application/json:
           schema:
