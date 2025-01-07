@@ -1,0 +1,272 @@
+openapi: 3.0.1
+info:
+  title: Currency Manager API
+  version: v1
+  description: API for managing the currencies and exchange rates.
+
+paths:
+  /internal/currencies:
+    get:
+      summary: "GET internal/currencies"
+      operationId: "getAvailableCurrencies"
+      responses:
+        "200":
+          $ref: "#/components/schemas/InternalAvailableCurrenciesResponse"
+  /internal/currencies/from/{currencyFrom}/to/{currencyTo}/:
+    get:
+      summary: "GET internal/currencies/from/{currencyFrom}/to/{currencyTo}/"
+      operationId: "getExchangeRates"
+      parameters:
+        - $ref: '#/components/parameters/CurrencyFrom'
+        - $ref: '#/components/parameters/CurrencyTo'
+        - $ref: '#/components/parameters/Date'
+      responses:
+        "200":
+          $ref: "#/components/schemas/InternalExchangeRateResponse"
+        "404":
+          $ref: "#/components/responses/MissingExchangeRateException"
+  /external/currencies:
+    get:
+      summary: "GET external/currencies"
+      operationId: "getAvailableCurrencies"
+      responses:
+        "200":
+          $ref: "#/components/schemas/ExternalAvailableCurrenciesResponse"
+  /external/currencies/from/{currencyFrom}/to/{currencyTo}/:
+    get:
+      summary: "GET external/currencies/from/{currencyFrom}/to/{currencyTo}/"
+      operationId: "getExchangeRates"
+      parameters:
+        - $ref: '#/components/parameters/CurrencyFrom'
+        - $ref: '#/components/parameters/CurrencyTo'
+        - $ref: '#/components/parameters/Date'
+      responses:
+        "200":
+          $ref: "#/components/schemas/ExternalExchangeRateResponse"
+        "404":
+          $ref: "#/components/responses/MissingExchangeRateException"
+
+components:
+  parameters:
+    CurrencyFrom:
+      name: currencyFrom
+      in: path
+      required: true
+      schema:
+        type: string
+        example: "PLN"
+      description: The base currency.
+    CurrencyTo:
+      name: currencyTo
+      in: path
+      required: true
+      schema:
+        type: string
+        example: "USD"
+      description: The target currency.
+    Date:
+      name: date
+      in: query
+      required: true
+      schema:
+        type: string
+        example: "2024-10-26"
+      description: The date for which the exchange rate is valid.
+
+  responses:
+    ExternalExchangeRateResponse:
+      description: External exchange rate response.
+      content:
+        application/vnd.gem.internal.v1+json:
+          schema:
+            $ref: '#/components/schemas/ExternalExchangeRateResponse'
+          examples:
+            exampleExternalExchangeRateResponse:
+              value:
+                currencyFrom: "USD"
+                currencyTo: "EUR"
+                rate: 0.82
+                createdAt: "2023-10-26T10:00:00Z"
+                forDate: "2023-10-26"
+                validTo: "2023-10-27"
+    ExternalAvailableCurrenciesResponse:
+      description: External available currencies response.
+      content:
+        application/vnd.gem.internal.v1+json:
+          schema:
+            $ref: '#/components/schemas/ExternalAvailableCurrenciesResponse'
+          examples:
+            exampleExternalAvailableCurrenciesResponse:
+              value:
+                currencies:
+                  - code: "USD"
+                  - code: "EUR"
+                  - code: "GBP"
+    InternalExchangeRateResponse:
+      description: Internal exchange rate response.
+      content:
+        application/vnd.gem.internal.v1+json:
+          schema:
+            $ref: '#/components/schemas/InternalExchangeRateResponse'
+          examples:
+            exampleInternalExchangeRateResponse:
+              value:
+                currencyFrom: "USD"
+                currencyTo: "EUR"
+                rate: 0.82
+                createdAt: "2023-10-26T10:00:00Z"
+                forDate: "2023-10-26"
+                validTo: "2023-10-27"
+    InternalAvailableCurrenciesResponse:
+      description: Internal available currencies response.
+      content:
+        application/vnd.gem.internal.v1+json:
+          schema:
+            $ref: '#/components/schemas/InternalAvailableCurrenciesResponse'
+          examples:
+            exampleInternalAvailableCurrenciesResponse:
+              value:
+                currencies:
+                  - code: "USD"
+                  - code: "EUR"
+                  - code: "PLN"
+
+
+    MissingExchangeRateException:
+      description: Exchange rate not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SimpleErrorsHolder'
+          examples:
+            exampleMissingExchangeRateException:
+              value:
+                errors:
+                  - code: "MissingExchangeRateException"
+                    details: "MissingExchangeRateException"
+                    message: "Exchange rate not found for $currencyFrom -> $currencyTo at $date"
+                    userMessage: "Exchange rate not found for $currencyFrom -> $currencyTo at $date"
+
+  schemas:
+    ExternalExchangeRateResponse:
+      type: object
+      properties:
+        currencyFrom:
+          type: string
+          description: The currency code to exchange from.
+          example: "USD"
+        currencyTo:
+          type: string
+          description: The currency code to exchange to.
+          example: "EUR"
+        rate:
+          type: number
+          format: double
+          description: The exchange rate.
+          example: 0.82
+        createdAt:
+          type: string
+          format: date-time
+          description: The date and time when the exchange rate was created.
+          example: "2023-10-26T10:00:00Z"
+        forDate:
+          type: string
+          format: date
+          description: The date for which the exchange rate is valid.
+          example: "2023-10-26"
+        validTo:
+          type: string
+          format: date
+          description: The date until which the exchange rate is valid.
+          example: "2023-10-27"
+    ExternalAvailableCurrenciesResponse:
+      type: object
+      properties:
+        currencies:
+          type: array
+          description: A list of available currencies.
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                description: The currency code.
+                example: "USD"
+    InternalExchangeRateResponse:
+      type: object
+      properties:
+        currencyFrom:
+          type: string
+          description: The currency code to exchange from.
+          example: "USD"
+        currencyTo:
+          type: string
+          description: The currency code to exchange to.
+          example: "EUR"
+        rate:
+          type: number
+          format: double
+          description: The exchange rate.
+          example: 0.82
+        createdAt:
+          type: string
+          format: date-time
+          description: The date and time when the exchange rate was created.
+          example: "2023-10-26T10:00:00Z"
+        forDate:
+          type: string
+          format: date
+          description: The date for which the exchange rate is valid.
+          example: "2023-10-26"
+        validTo:
+          type: string
+          format: date
+          description: The date until which the exchange rate is valid.
+          example: "2023-10-27"
+    InternalAvailableCurrenciesResponse:
+      type: object
+      properties:
+        currencies:
+          type: array
+          description: A list of available currencies.
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                description: The currency code.
+                example: "USD"
+
+    SimpleErrorsHolder:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                nullable: true
+                description: Error code.
+                example: "INVALID_VALUE"
+              message:
+                type: string
+                nullable: true
+                description: Error message.
+                example: "The provided value is invalid."
+              details:
+                type: string
+                nullable: true
+                description: Additional error details.
+                example: "The field 'email' must contain a valid email address."
+              path:
+                type: string
+                nullable: true
+                description: The API path related to the error.
+                example: "/external/users/{userId}/attachments/{attachmentId}"
+              userMessage:
+                type: string
+                nullable: true
+                description: A user-friendly error message.
+                example: "Please provide a valid email address."
