@@ -7,14 +7,20 @@ info:
 paths:
   /internal/currencies:
     get:
-      summary: "GET internal/currencies"
+      tags:
+        - Internal Currency
+      summary: "Retrieve available currencies"
+      description: "Retrieves a list of all available currencies for internal use."
       operationId: "getAvailableCurrencies"
       responses:
         "200":
           $ref: "#/components/schemas/InternalAvailableCurrenciesResponse"
   /internal/currencies/from/{currencyFrom}/to/{currencyTo}/:
     get:
-      summary: "GET internal/currencies/from/{currencyFrom}/to/{currencyTo}/"
+      tags:
+        - Internal Currency
+      summary: "Retrieve exchange rate"
+      description: "Retrieves the exchange rate between two specified currencies for a given date."
       operationId: "getExchangeRates"
       parameters:
         - $ref: '#/components/parameters/CurrencyFrom'
@@ -27,14 +33,20 @@ paths:
           $ref: "#/components/responses/MissingExchangeRateException"
   /external/currencies:
     get:
-      summary: "GET external/currencies"
+      tags:
+        - External Currency
+      summary: "Retrieve available currencies"
+      description: "Retrieves a list of all available currencies for external use."
       operationId: "getAvailableCurrencies"
       responses:
         "200":
           $ref: "#/components/schemas/ExternalAvailableCurrenciesResponse"
   /external/currencies/from/{currencyFrom}/to/{currencyTo}/:
     get:
-      summary: "GET external/currencies/from/{currencyFrom}/to/{currencyTo}/"
+      tags:
+        - External Currency
+      summary: "Retrieve exchange rate"
+      description: "Retrieves the exchange rate between two specified currencies for a given date."
       operationId: "getExchangeRates"
       parameters:
         - $ref: '#/components/parameters/CurrencyFrom'
@@ -45,6 +57,7 @@ paths:
           $ref: "#/components/schemas/ExternalExchangeRateResponse"
         "404":
           $ref: "#/components/responses/MissingExchangeRateException"
+
 
 components:
   parameters:
