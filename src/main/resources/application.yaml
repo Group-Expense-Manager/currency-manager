@@ -227,3 +227,10 @@ nbp:
         - MNT
         - VUV
         - BAM
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    url: /openapi.yaml
+  api-docs:
+    path: /v3/api-docs
