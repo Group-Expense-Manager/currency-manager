@@ -14,7 +14,7 @@ paths:
       operationId: "getAvailableCurrencies"
       responses:
         "200":
-          $ref: "#/components/schemas/InternalAvailableCurrenciesResponse"
+          $ref: "#/components/responses/InternalAvailableCurrenciesResponse"
   /internal/currencies/from/{currencyFrom}/to/{currencyTo}/:
     get:
       tags:
@@ -28,7 +28,7 @@ paths:
         - $ref: '#/components/parameters/Date'
       responses:
         "200":
-          $ref: "#/components/schemas/InternalExchangeRateResponse"
+          $ref: "#/components/responses/InternalExchangeRateResponse"
         "404":
           $ref: "#/components/responses/MissingExchangeRateException"
   /external/currencies:
@@ -40,7 +40,7 @@ paths:
       operationId: "getAvailableCurrencies"
       responses:
         "200":
-          $ref: "#/components/schemas/ExternalAvailableCurrenciesResponse"
+          $ref: "#/components/responses/ExternalAvailableCurrenciesResponse"
   /external/currencies/from/{currencyFrom}/to/{currencyTo}/:
     get:
       tags:
@@ -54,7 +54,7 @@ paths:
         - $ref: '#/components/parameters/Date'
       responses:
         "200":
-          $ref: "#/components/schemas/ExternalExchangeRateResponse"
+          $ref: "#/components/responses/ExternalExchangeRateResponse"
         "404":
           $ref: "#/components/responses/MissingExchangeRateException"
 
